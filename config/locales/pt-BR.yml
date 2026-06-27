@@ -1,0 +1,60 @@
+---
+pt-BR:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      long: "%d de %B de %Y"
+    day_names: [Domingo, Segunda-feira, Terça-feira, Quarta-feira, Quinta-feira, Sexta-feira, Sábado]
+    abbr_day_names: [Dom, Seg, Ter, Qua, Qui, Sex, Sáb]
+    month_names: [~, Janeiro, Fevereiro, Março, Abril, Maio, Junho, Julho, Agosto, Setembro, Outubro, Novembro, Dezembro]
+    abbr_month_names: [~, Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez]
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M:%S"
+      long: "%d/%m/%Y %H:%M"
+      short: "%d/%m %H:%M"
+  helpers:
+    submit:
+      stay:
+        create: "Confirmar Check-in"
+        update: "Atualizar Estadia"
+      room:
+        create: "Salvar Quarto"
+        update: "Atualizar Quarto"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "A validação falhou: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Não é possível excluir pois existe um registro dependente"
+          has_many: "Não é possível excluir pois existem registros dependentes"
+    models:
+      room: "Quarto"
+      stay: "Estadia"
+      user: "Usuário"
+      price_period: "Período"
+    attributes:
+      room:
+        number: "Número"
+        floor: "Andar"
+        daily_rate: "Diária"
+        status: "Status"
+      stay:
+        room: "Quarto"
+        user: "Responsável"
+        check_in: "Check-in"
+        check_out: "Check-out"
+        total_value: "Valor total"
+        observation: "Observação"
+        date: "Data"
+        week_number: "Semana"
+        status: "Status"
+        password: "Senha"
+      price_period:
+        name: "Período"
+        price: "Preço"
+      user:
+        name: "Nome"
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"

@@ -1,0 +1,89 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h1 class="card-title h4 mb-0">Estadia #<%= @stay.id %>
+      - Quarto
+      <%= @stay.room.number %></h1>
+    <div>
+      <% if @stay.active? %>
+        <% if policy(@stay).cancel? %>
+          <%= button_to "Cancelar",
+          cancel_stay_path(@stay),
+          method: :patch,
+          class: "btn btn-danger",
+          data: {
+            confirm: "Cancelar estadia do quarto #{@stay.room.number}?",
+          } %>
+        <% end %>
+        <%= button_to "Finalizar Check-out",
+        check_out_stay_path(@stay),
+        method: :patch,
+        class: "btn btn-success",
+        data: {
+          confirm: "Confirmar check-out do quarto #{@stay.room.number}?",
+        } %>
+      <% end %>
+      <% if policy(@stay).edit? %>
+        <%= link_to "Editar", edit_stay_path(@stay), class: "btn btn-warning" %>
+      <% end %>
+      <% if @stay.cancelled? && policy(@stay).destroy? %>
+        <%= button_to "Excluir",
+        stay_path(@stay),
+        method: :delete,
+        class: "btn btn-outline-danger btn-sm",
+        data: {
+          confirm: "Excluir permanentemente este registro?",
+        } %>
+      <% end %>
+      <%= link_to "Voltar", stays_path, class: "btn btn-secondary" %>
+      <%= link_to "Imprimir",
+      "#",
+      class: "btn btn-outline-secondary",
+      onclick: "window.print(); return false;" %>
+    </div>
+  </div>
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Quarto</dt>
+      <dd class="col-sm-9"><%= @stay.room.number %></dd>
+
+      <dt class="col-sm-3">Período</dt>
+      <dd class="col-sm-9"><%= @stay.price_period.name %>
+        —
+        <%= number_to_currency @stay.price_period.price %></dd>
+
+      <dt class="col-sm-3">Responsável</dt>
+      <dd class="col-sm-9"><%= @stay.user.name %></dd>
+
+      <dt class="col-sm-3">Data</dt>
+      <dd class="col-sm-9"><%= l @stay.date %></dd>
+
+      <dt class="col-sm-3">Semana</dt>
+      <dd class="col-sm-9"><%= @stay.week_number %></dd>
+
+      <dt class="col-sm-3">Check-in</dt>
+      <dd class="col-sm-9"><%= l @stay.check_in, format: :long %></dd>
+
+      <dt class="col-sm-3">Check-out</dt>
+      <dd class="col-sm-9"><%= if @stay.check_out
+          l(@stay.check_out, format: :long)
+        else
+          "<span class='text-success'>Em andamento</span>".html_safe
+        end %></dd>
+
+      <dt class="col-sm-3">Valor total</dt>
+      <dd class="col-sm-9"><%= number_to_currency @stay.total_value %></dd>
+
+      <dt class="col-sm-3">Observação</dt>
+      <dd class="col-sm-9"><%= @stay.observation.presence || "-" %></dd>
+
+      <dt class="col-sm-3">Status</dt>
+      <dd class="col-sm-9">
+        <span
+          class="badge bg-<%= @stay.status == 'active' ? 'success' : @stay.status == 'completed' ? 'primary' : 'secondary' %>"
+        >
+          <%= @stay.status.humanize %>
+        </span>
+      </dd>
+    </dl>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<%= form_with model: stay, class: "row g-3" do |f| %>
+  <% if stay.errors.any? %>
+    <div class="alert alert-danger">
+      <h6><%= pluralize stay.errors.count, "erro" %>
+        ao salvar:</h6>
+      <ul class="mb-0">
+        <% stay.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="col-md-4">
+    <%= f.label :room_id, "Quarto", class: "form-label" %>
+    <%= f.collection_select :room_id,
+                        Room.available.order(:number),
+                        :id,
+                        :number,
+                        { prompt: "Selecione o quarto" },
+                        class: "form-select",
+                        required: true %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.label :price_period_id, "Período", class: "form-label" %>
+    <%= f.collection_radio_buttons :price_period_id, PricePeriod.all, :id, :name do |b| %>
+      <div class="form-check">
+        <%= b.radio_button class: "form-check-input" %>
+        <%= b.label class: "form-check-label" do %>
+          <%= b.text %>
+          —
+          <%= number_to_currency b.object.price %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.label :check_in, "Hora de entrada", class: "form-label" %>
+    <%= f.datetime_field :check_in, class: "form-control", required: true %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :observation, "Observação", class: "form-label" %>
+    <%= f.text_area :observation, class: "form-control", rows: 2 %>
+  </div>
+
+  <div class="col-md-6">
+    <%= f.label :password, "Confirme sua senha", class: "form-label" %>
+    <%= f.password_field :password,
+                     class: "form-control",
+                     required: true,
+                     placeholder: "Digite sua senha para confirmar o check-in" %>
+    <div class="form-text">Necessário para autorizar o check-in.</div>
+  </div>
+
+  <div class="col-12">
+    <%= f.submit "Confirmar Check-in", class: "btn btn-primary btn-lg" %>
+    <%= link_to "Cancelar", stays_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

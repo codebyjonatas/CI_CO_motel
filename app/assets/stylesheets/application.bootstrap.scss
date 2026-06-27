@@ -1,0 +1,28 @@
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons';
+@media print {
+  body > *:not(.container) {
+    display: none !important;
+  }
+  .container > *:not(.card) {
+    display: none !important;
+  }
+  .card-header > *:not(h1) {
+    display: none !important;
+  }
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  .card-header {
+    border-bottom: none !important;
+    padding: 0 !important;
+  }
+  .card-body {
+    padding: 0 !important;
+  }
+  body {
+    font-size: 12pt;
+  }
+}

@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Estadias</h1>
+  <% if policy(Stay).new? %>
+    <%= link_to "Novo Check-in", new_stay_path, class: "btn btn-primary" %>
+  <% end %>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Quarto</th>
+        <th>Período</th>
+        <th>Responsável</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @stays.each do |stay| %>
+        <tr>
+          <td><%= link_to stay.room.number, stay %></td>
+          <td><%= stay.price_period.name %></td>
+          <td><%= stay.user.name %></td>
+          <td><%= l stay.check_in, format: :long %></td>
+          <td><%= if stay.check_out
+              l(stay.check_out, format: :long)
+            else
+              "<span class='text-success'>Em andamento</span>".html_safe
+            end %></td>
+          <td><%= number_to_currency stay.total_value %></td>
+          <td>
+            <span
+              class="badge bg-<%= stay.status == 'active' ? 'success' : stay.status == 'completed' ? 'primary' : 'secondary' %>"
+            >
+              <%= stay.status.humanize %>
+            </span>
+          </td>
+          <td>
+            <%= link_to "Ver", stay, class: "btn btn-sm btn-outline-primary" %>
+            <% if stay.active? %>
+              <% if stay.active? && policy(stay).cancel? %>
+                <%= button_to "Cancelar",
+                cancel_stay_path(stay),
+                method: :patch,
+                class: "btn btn-sm btn-outline-danger",
+                data: {
+                  confirm: "Cancelar estadia?",
+                } %>
+              <% end %>
+              <%= button_to "Finalizar",
+              check_out_stay_path(stay),
+              method: :patch,
+              class: "btn btn-sm btn-outline-success",
+              data: {
+                confirm: "Finalizar check-out?",
+              } %>
+            <% end %>
+            <% if policy(stay).edit? %>
+              <%= link_to "Editar", edit_stay_path(stay), class: "btn btn-sm btn-outline-warning" %>
+            <% end %>
+            <% if stay.cancelled? && policy(stay).destroy? %>
+              <%= button_to "Excluir",
+              stay_path(stay),
+              method: :delete,
+              class: "btn btn-sm btn-outline-danger",
+              data: {
+                confirm: "Excluir permanentemente?",
+              } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

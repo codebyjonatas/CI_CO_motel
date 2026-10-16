@@ -31,6 +31,20 @@ class TabsControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: /Comanda Paga/, count: 0
   end
 
+  test "dashboard paginates when there are more than 20 tabs" do
+    sign_in users(:admin)
+    25.times do |i|
+      Tab.create!(room: rooms(:one), opened_by: users(:admin), guest_identifier: "Hóspede #{i}")
+    end
+
+    get tabs_dashboard_url
+
+    assert_response :success
+    assert_select "nav[aria-label=?]", "Paginação"
+    assert_select "ul.pagination"
+    assert_select "a.page-link", minimum: 1
+  end
+
   test "dashboard lists eligible rooms for new tab" do
     sign_in users(:admin)
 

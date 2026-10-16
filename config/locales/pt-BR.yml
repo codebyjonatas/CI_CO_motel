@@ -34,6 +34,14 @@ pt-BR:
       room:
         create: "Salvar Quarto"
         update: "Atualizar Quarto"
+  views:
+    pagination:
+      first: "« Primeira"
+      last: "Última »"
+      previous: "‹ Anterior"
+      next: "Próxima ›"
+      truncate: "…"
+      aria_label: "Paginação"
   activerecord:
     errors:
       messages:

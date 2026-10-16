@@ -2,22 +2,24 @@
 
 one:
   room: one
-  user: one
-  check_in: 2026-06-19 11:07:39
-  check_out: 2026-06-19 11:07:39
-  total_value: 9.99
-  observation: MyText
-  date: 2026-06-19
-  week_number: 1
-  status: 1
+  user: admin
+  price_period: one
+  check_in: <%= 1.hour.ago %>
+  check_out:
+  total_value: 18.00
+  observation:
+  date: <%= Date.current %>
+  week_number: <%= Date.current.cweek %>
+  status: active
 
 two:
   room: two
-  user: two
-  check_in: 2026-06-19 11:07:39
-  check_out: 2026-06-19 11:07:39
-  total_value: 9.99
-  observation: MyText
-  date: 2026-06-19
-  week_number: 1
-  status: 1
+  user: attendant
+  price_period: two
+  check_in: <%= 2.hours.ago %>
+  check_out: <%= 1.hour.ago %>
+  total_value: 32.00
+  observation: Finalizada normalmente
+  date: <%= Date.current %>
+  week_number: <%= Date.current.cweek %>
+  status: completed

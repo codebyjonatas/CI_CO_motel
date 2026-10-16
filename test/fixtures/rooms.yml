@@ -1,13 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  number: MyString
+  number: 101
   floor: 1
-  daily_rate: 9.99
-  status: 1
+  daily_rate: 18.00
+  status: available
 
 two:
-  number: MyString
+  number: 102
   floor: 1
-  daily_rate: 9.99
-  status: 1
+  daily_rate: 18.00
+  status: available
+
+three:
+  number: 201
+  floor: 2
+  daily_rate: 22.00
+  status: available
+
+four:
+  number: 202
+  floor: 2
+  daily_rate: 22.00
+  status: maintenance

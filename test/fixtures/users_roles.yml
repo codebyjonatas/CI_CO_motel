@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+admin_admin:
+  user_id: <%= ActiveRecord::FixtureSet.identify(:admin) %>
+  role_id: <%= ActiveRecord::FixtureSet.identify(:admin_role) %>
+
+attendant_attendant:
+  user_id: <%= ActiveRecord::FixtureSet.identify(:attendant) %>
+  role_id: <%= ActiveRecord::FixtureSet.identify(:attendant_role) %>

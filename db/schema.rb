@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_19_213629) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_15_135526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "cleaning_logs", force: :cascade do |t|
+    t.bigint "cleaned_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.datetime "inspected_at"
+    t.bigint "inspected_by_id"
+    t.text "notes"
+    t.text "rejection_reason"
+    t.bigint "room_id", null: false
+    t.datetime "started_at"
+    t.integer "status"
+    t.bigint "stay_id"
+    t.datetime "updated_at", null: false
+    t.index ["room_id"], name: "index_cleaning_logs_on_room_id"
+    t.index ["stay_id"], name: "index_cleaning_logs_on_stay_id"
+  end
 
   create_table "price_periods", force: :cascade do |t|
     t.string "code", null: false
@@ -25,6 +42,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_213629) do
     t.index ["code"], name: "index_price_periods_on_code", unique: true
   end
 
+  create_table "product_price_rules", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "days_of_week", default: [], array: true
+    t.time "ends_at"
+    t.string "name", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.integer "priority", default: 0, null: false
+    t.bigint "product_id", null: false
+    t.time "starts_at"
+    t.datetime "updated_at", null: false
+    t.date "valid_from"
+    t.date "valid_until"
+    t.index ["product_id", "active", "priority"], name: "idx_on_product_id_active_priority_1078874090"
+    t.index ["product_id"], name: "index_product_price_rules_on_product_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "category", default: 99, null: false
+    t.string "code", limit: 20, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.integer "tax_rate", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_products_on_active"
+    t.index ["category"], name: "index_products_on_category"
+    t.index ["code"], name: "index_products_on_code", unique: true
+  end
+
   create_table "roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -35,14 +84,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_213629) do
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
   end
 
+  create_table "room_status_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "from_status", null: false
+    t.text "notes"
+    t.bigint "room_id", null: false
+    t.bigint "stay_id"
+    t.integer "to_status", null: false
+    t.integer "trigger", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["room_id", "created_at"], name: "index_room_status_logs_on_room_id_and_created_at"
+    t.index ["room_id"], name: "index_room_status_logs_on_room_id"
+    t.index ["stay_id"], name: "index_room_status_logs_on_stay_id"
+    t.index ["user_id"], name: "index_room_status_logs_on_user_id"
+  end
+
   create_table "rooms", force: :cascade do |t|
+    t.bigint "cleaned_by_id"
+    t.datetime "cleaning_finished_at"
+    t.datetime "cleaning_started_at"
     t.datetime "created_at", null: false
     t.decimal "daily_rate", precision: 10, scale: 2, default: "0.0", null: false
     t.integer "floor", default: 1
     t.string "number", null: false
+    t.datetime "quarantine_until"
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
+    t.index ["cleaned_by_id"], name: "index_rooms_on_cleaned_by_id"
     t.index ["number"], name: "index_rooms_on_number", unique: true
+    t.index ["quarantine_until"], name: "index_rooms_on_quarantine_until"
+    t.index ["status", "quarantine_until"], name: "index_rooms_on_status_and_quarantine_until", where: "(status = ANY (ARRAY[3, 4]))"
+    t.index ["status"], name: "index_rooms_on_status"
+  end
+
+  create_table "stay_guests", force: :cascade do |t|
+    t.date "birth_date"
+    t.datetime "created_at", null: false
+    t.string "document"
+    t.integer "document_type", default: 0, null: false
+    t.string "email"
+    t.string "full_name", null: false
+    t.boolean "main_guest", default: false, null: false
+    t.string "phone"
+    t.bigint "stay_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stay_id", "main_guest"], name: "index_stay_guests_on_stay_id_and_main_guest", unique: true, where: "(main_guest = true)"
+    t.index ["stay_id"], name: "index_stay_guests_on_stay_id"
   end
 
   create_table "stays", force: :cascade do |t|
@@ -61,6 +149,61 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_213629) do
     t.index ["price_period_id"], name: "index_stays_on_price_period_id"
     t.index ["room_id"], name: "index_stays_on_room_id"
     t.index ["user_id"], name: "index_stays_on_user_id"
+  end
+
+  create_table "tab_item_audits", force: :cascade do |t|
+    t.integer "action", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "previous_state", null: false
+    t.text "reason"
+    t.bigint "tab_item_id", null: false
+    t.integer "tab_status_at_time", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["tab_item_id"], name: "index_tab_item_audits_on_tab_item_id"
+    t.index ["user_id"], name: "index_tab_item_audits_on_user_id"
+  end
+
+  create_table "tab_items", force: :cascade do |t|
+    t.bigint "added_by_id", null: false
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.bigint "product_id", null: false
+    t.integer "quantity", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "tab_id", null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.datetime "voided_at"
+    t.bigint "voided_by_id"
+    t.index ["added_by_id"], name: "index_tab_items_on_added_by_id"
+    t.index ["product_id"], name: "index_tab_items_on_product_id"
+    t.index ["tab_id"], name: "index_tab_items_on_tab_id"
+    t.index ["voided_by_id"], name: "index_tab_items_on_voided_by_id"
+  end
+
+  create_table "tabs", force: :cascade do |t|
+    t.datetime "closed_at"
+    t.bigint "closed_by_id"
+    t.datetime "created_at", null: false
+    t.decimal "discount", precision: 10, scale: 2, default: "0.0", null: false
+    t.string "guest_identifier"
+    t.text "notes"
+    t.bigint "opened_by_id", null: false
+    t.datetime "paid_at"
+    t.bigint "room_id", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "stay_id"
+    t.decimal "subtotal", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "total", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["closed_by_id"], name: "index_tabs_on_closed_by_id"
+    t.index ["opened_by_id"], name: "index_tabs_on_opened_by_id"
+    t.index ["room_id", "status"], name: "index_tabs_on_room_id_and_status", where: "(status = ANY (ARRAY[0, 1]))"
+    t.index ["room_id"], name: "index_tabs_on_room_id"
+    t.index ["stay_id", "status"], name: "index_tabs_on_stay_id_and_status"
+    t.index ["stay_id"], name: "index_tabs_on_stay_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -84,7 +227,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_19_213629) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "cleaning_logs", "rooms"
+  add_foreign_key "cleaning_logs", "stays"
+  add_foreign_key "product_price_rules", "products"
+  add_foreign_key "room_status_logs", "rooms"
+  add_foreign_key "room_status_logs", "stays", on_delete: :nullify
+  add_foreign_key "room_status_logs", "users"
+  add_foreign_key "rooms", "users", column: "cleaned_by_id"
+  add_foreign_key "stay_guests", "stays"
   add_foreign_key "stays", "price_periods"
   add_foreign_key "stays", "rooms"
   add_foreign_key "stays", "users"
+  add_foreign_key "tab_item_audits", "tab_items"
+  add_foreign_key "tab_item_audits", "users"
+  add_foreign_key "tab_items", "products"
+  add_foreign_key "tab_items", "tabs"
+  add_foreign_key "tab_items", "users", column: "added_by_id"
+  add_foreign_key "tab_items", "users", column: "voided_by_id"
+  add_foreign_key "tabs", "rooms"
+  add_foreign_key "tabs", "stays"
+  add_foreign_key "tabs", "users", column: "closed_by_id"
+  add_foreign_key "tabs", "users", column: "opened_by_id"
 end

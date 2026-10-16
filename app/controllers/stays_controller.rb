@@ -1,5 +1,5 @@
 class StaysController < ApplicationController
-  before_action :set_stay, only: %i[show edit update destroy check_out cancel]
+  before_action :set_stay, only: %i[show edit update destroy check_out cancel info]
 
   def index
     @stays = Stay.includes(:room, :user, :price_period).ordered
@@ -64,11 +64,25 @@ class StaysController < ApplicationController
   end
 
   def check_out
-  authorize @stay
-  @stay.update!(check_out: Time.current, status: :completed)
-  @stay.room.update!(status: :available)
-  redirect_to @stay, notice: "Check-out realizado com sucesso."
-end
+    authorize @stay
+    result = Stays::CheckOutService.call(stay: @stay, user: current_user)
+
+    if result.success?
+      redirect_to @stay, notice: "Check-out realizado com sucesso."
+    else
+      redirect_to @stay, alert: result.error
+    end
+  end
+
+  def info
+    authorize @stay
+    render json: {
+      room_number: @stay.room.number,
+      guest_name: @stay.main_guest&.full_name || @stay.user.name,
+      check_in: @stay.check_in.strftime("%d/%m/%Y %H:%M"),
+      price_period: @stay.price_period.name
+    }
+  end
 
   private
 

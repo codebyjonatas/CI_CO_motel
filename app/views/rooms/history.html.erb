@@ -1,0 +1,57 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-5">
+  <div>
+    <%= link_to room_path(@room), class: "btn btn-tertiary btn-sm mb-3 d-inline-flex align-items-center gap-1" do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Voltar ao quarto</span>
+    <% end %>
+    <span class="badge-custom <%= room_status_badge_class(@room.status) %> mb-2">
+      <%= room_status_icon(@room.status) %> <%= room_status_label(@room.status) %>
+    </span>
+    <h1 class="h2 mb-0">Histórico do Quarto <%= @room.number %></h1>
+    <p class="text-muted small mt-1">Linha do tempo unificada: estadias, comandas, limpezas e mudanças de status.</p>
+  </div>
+  <%= link_to room_path(@room), class: "btn btn-secondary d-inline-flex align-items-center gap-2" do %>
+    <i class="bi bi-door-open"></i>
+    <span>Ver quarto</span>
+  <% end %>
+</div>
+
+<% if @timeline.any? %>
+  <div class="card card-feature">
+    <div class="card-body">
+      <ul class="list-unstyled mb-0">
+        <% @timeline.each_with_index do |event, index| %>
+          <li class="d-flex gap-3 <%= "pb-4" unless index == @timeline.size - 1 %>">
+            <div class="d-flex flex-column align-items-center">
+              <span class="badge-custom <%= event.badge %>" style="width: 2.25rem; height: 2.25rem; justify-content: center;">
+                <i class="bi <%= room_history_icon(event.category) %>"></i>
+              </span>
+              <% unless index == @timeline.size - 1 %>
+                <span class="flex-grow-1 my-1" style="width: 2px; background-color: var(--color-border);"></span>
+              <% end %>
+            </div>
+            <div class="pt-1">
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="fw-semibold"><%= event.title %></span>
+                <% if event.at %>
+                  <span class="text-muted small"><%= l event.at, format: :long %></span>
+                <% end %>
+              </div>
+              <% if event.description.present? %>
+                <p class="text-muted small mb-0 mt-1"><%= event.description %></p>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% else %>
+  <div class="card card-feature text-center py-5">
+    <div class="icon-wrapper mx-auto mb-3" style="background-color: var(--color-muted-light); color: var(--color-muted);">
+      <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+    </div>
+    <h3 class="h4 mb-2">Sem histórico registrado</h3>
+    <p class="text-muted mb-0">Ainda não há eventos para este quarto.</p>
+  </div>
+<% end %>

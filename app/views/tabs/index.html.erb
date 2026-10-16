@@ -1,0 +1,89 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Comandas do Quarto <%= @room.number %></h1>
+    <div class="btn-group">
+      <%= link_to "Nova Comanda (Estadia)", new_room_tab_path(@room), class: "btn btn-primary", data: { turbo_frame: "modal" } %>
+      <%= link_to "Nova Comanda (Passante)", new_room_tab_path(@room, walk_in: true), class: "btn btn-outline-primary", data: { turbo_frame: "modal" } %>
+    </div>
+  </div>
+
+  <% if @active_tab %>
+    <div class="alert alert-info mb-4">
+      <strong>Comanda Aberta:</strong> <%= link_to "##{@active_tab.id} - #{@active_tab.guest_identifier} - R$ #{number_to_currency(@active_tab.total)}", room_tab_path(@room, @active_tab), class: "alert-link" %>
+      <% if @active_tab.walk_in? %>
+        <span class="badge bg-warning text-dark ms-2">Passante</span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Histórico de Comandas</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Itens</th>
+              <th>Subtotal</th>
+              <th>Desc.</th>
+              <th>Total</th>
+              <th>Abertura</th>
+              <th>Fechamento</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @tabs.each do |tab| %>
+              <tr>
+                <td><%= tab.id %></td>
+                <td><%= tab.guest_identifier %></td>
+                <td>
+                  <% if tab.walk_in? %>
+                    <span class="badge bg-warning text-dark">Passante</span>
+                  <% else %>
+                    <span class="badge bg-info">Estadia</span>
+                  <% end %>
+                </td>
+                <td><%= badge_for_tab_status(tab.status) %></td>
+                <td><%= tab.tab_items.active.count %></td>
+                <td><%= number_to_currency(tab.subtotal) %></td>
+                <td><%= number_to_currency(tab.discount) %></td>
+                <td><strong><%= number_to_currency(tab.total) %></strong></td>
+                <td><%= l(tab.created_at, format: :short) %></td>
+                <td><%= tab.closed_at ? l(tab.closed_at, format: :short) : "-" %></td>
+                <td>
+                  <%= link_to room_tab_path(@room, tab), class: "btn btn-sm btn-outline-primary" do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <% if tab.open? %>
+                    <%= button_to close_room_tab_path(@room, tab), method: :patch, class: "btn btn-sm btn-outline-success", form: { data: { turbo_confirm: "Fechar comanda?" } } do %>
+                      <i class="bi bi-check-circle"></i>
+                    <% end %>
+                    <% if policy(tab).pay? %>
+                      <%= button_to pay_room_tab_path(@room, tab), method: :patch, class: "btn btn-sm btn-outline-dark", form: { data: { turbo_confirm: "Marcar como paga?" } } do %>
+                        <i class="bi bi-cash"></i>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <% if @tabs.empty? %>
+    <div class="text-center py-5">
+      <i class="bi bi-receipt-cutoff display-1 text-muted"></i>
+      <p class="text-muted mt-3">Nenhuma comanda registrada para este quarto</p>
+    </div>
+  <% end %>
+</div>

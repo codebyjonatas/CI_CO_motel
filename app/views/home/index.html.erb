@@ -1,9 +1,89 @@
-<div class="text-center py-5">
-  <h1 class="display-4">Bem-vindo ao Sys Hotel</h1>
-  <p class="lead text-muted">Sistema de check-in e check-out para controle de estadias</p>
-  <hr class="my-4">
-  <div class="d-flex justify-content-center gap-3">
-    <%= link_to "Entrar", new_user_session_path, class: "btn btn-primary btn-lg" %>
-    <%= link_to "Cadastrar", new_user_registration_path, class: "btn btn-outline-primary btn-lg" %>
+<!-- HERO -->
+<section class="section-xl bg-surface">
+  <div class="container-narrow text-center">
+    <span class="badge-custom badge-primary mb-4">Sistema completo para motéis e hotéis</span>
+    <h1 class="display-1 mb-4">Check-in e Check-out simples, rápido e seguro</h1>
+    <p class="lead mx-auto mb-5" style="max-width: 42rem;">
+      Gerencie quartos, períodos de preço e estadias em uma interface que sua equipe vai adorar usar. Sem Redis, sem complexidade.
+    </p>
+    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+      <%= link_to "Começar grátis", new_user_registration_path, class: "btn btn-primary btn-lg" %>
+      <%= link_to "Ver demonstração", new_user_session_path, class: "btn btn-secondary btn-lg" %>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center gap-4 mt-5 text-muted small">
+      <span>7 quartos ativos</span>
+      <span>•</span>
+      <span>4 períodos de preço</span>
+      <span>•</span>
+      <span>2 perfis de acesso</span>
+    </div>
   </div>
-</div>
+</section>
+
+<!-- FEATURES -->
+<section class="section bg-primary-light">
+  <div class="container-narrow">
+    <header class="text-center mb-6">
+      <h2 class="h2 mb-2">Tudo que você precisa para operar</h2>
+      <p class="lead mb-0">Funcionalidades pensadas para a rotina real de recepção</p>
+    </header>
+    <div class="grid-3">
+      <article class="card card-feature">
+        <div class="icon-wrapper"><i class="bi bi-door-open"></i></div>
+        <h4>Gestão de Quartos</h4>
+        <p>Cadastre andares, status (livre/ocupado/manutenção) e visualize ocupação em tempo real.</p>
+      </article>
+      <article class="card card-feature">
+        <div class="icon-wrapper"><i class="bi bi-clock-history"></i></div>
+        <h4>Períodos de Preço Fixos</h4>
+        <p>Configure 1h, 2h, pernoite básico/avançado. Valor travado no check-in, sem surpresas.</p>
+      </article>
+      <article class="card card-feature">
+        <div class="icon-wrapper"><i class="bi bi-shield-lock"></i></div>
+        <h4>Controle de Acesso</h4>
+        <p>Dois papéis (admin/atendente), reentrada de senha no check-in, auditoria completa.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container-narrow">
+    <header class="text-center mb-6">
+      <h2 class="h2 mb-2">Como funciona em 3 passos</h2>
+    </header>
+    <div class="grid-3">
+      <div class="text-center p-4">
+        <div class="d-inline-flex align-items-center justify-content-center mb-3 bg-primary-light text-primary rounded-full" style="width: 48px; height: 48px; font-size: 1.5rem;">
+          <i class="bi bi-plus-circle"></i>
+        </div>
+        <h4>1. Cadastre</h4>
+        <p class="text-muted small">Quartos, andares e períodos de preço</p>
+      </div>
+      <div class="text-center p-4">
+        <div class="d-inline-flex align-items-center justify-content-center mb-3 bg-primary-light text-primary rounded-full" style="width: 48px; height: 48px; font-size: 1.5rem;">
+          <i class="bi bi-person-plus"></i>
+        </div>
+        <h4>2. Receba</h4>
+        <p class="text-muted small">Check-in com seleção de quarto e período</p>
+      </div>
+      <div class="text-center p-4">
+        <div class="d-inline-flex align-items-center justify-content-center mb-3 bg-primary-light text-primary rounded-full" style="width: 48px; height: 48px; font-size: 1.5rem;">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <h4>3. Finalize</h4>
+        <p class="text-muted small">Check-out manual, quarto liberado na hora</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="section-xl bg-surface border-top" style="border-color: var(--color-border) !important;">
+  <div class="container-narrow text-center">
+    <h2 class="h2 mb-3">Pronto para simplificar sua recepção?</h2>
+    <p class="lead mb-4">Crie sua conta em segundos. Sem cartão de crédito.</p>
+    <%= link_to "Começar grátis", new_user_registration_path, class: "btn btn-primary btn-lg" %>
+  </div>
+</section>

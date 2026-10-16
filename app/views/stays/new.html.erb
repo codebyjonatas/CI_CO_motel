@@ -1,3 +1,13 @@
-<h1>Novo Check-in</h1>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-5">
+  <div>
+    <%= link_to stays_path, class: "btn btn-tertiary btn-sm mb-3 d-inline-flex align-items-center gap-1" do %>
+      <i class="bi bi-arrow-left"></i>
+      <span>Voltar</span>
+    <% end %>
+    <span class="badge-custom badge-accent mb-2">Novo Check-in</span>
+    <h1 class="h2 mb-0">Registrar Check-in</h1>
+    <p class="text-muted small mt-1">Selecione o quarto, período e confirme com sua senha</p>
+  </div>
+</div>
 
 <%= render "form", stay: @stay %>

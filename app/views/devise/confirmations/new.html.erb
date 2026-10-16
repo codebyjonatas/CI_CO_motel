@@ -1,16 +1,59 @@
-<h2>Resend confirmation instructions</h2>
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-bg py-5 px-3">
+  <div class="w-100" style="max-width: 420px;">
+    <!-- Logo/Brand -->
+    <div class="text-center mb-5">
+      <a href="<%= root_path %>" class="navbar-brand-custom d-inline-flex align-items-center justify-content-center gap-2 text-decoration-none">
+        <span class="logo-mark"><i class="bi bi-building"></i></span>
+        <span class="fw-bold" style="font-size: 1.5rem;">Sys Motel</span>
+      </a>
+      <p class="text-muted mt-3 mb-0">Sistema de Check-in/Check-out</p>
+    </div>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+    <!-- Card de Confirmação -->
+    <div class="card card-feature">
+      <div class="p-4 p-md-5">
+        <header class="text-center mb-4">
+          <div class="icon-wrapper mx-auto mb-3" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+            <i class="bi bi-envelope-check-fill"></i>
+          </div>
+          <h1 class="h3 mb-1">Confirmar e-mail</h1>
+          <p class="text-muted small mb-0">Digite seu e-mail para reenviar as instruções de confirmação</p>
+        </header>
 
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %></p>
+        <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "auth-form" }) do |f| %>
+          <%= render "devise/shared/error_messages", resource: resource %>
+
+          <div class="mb-4">
+            <%= f.label :email, "E-mail cadastrado", class: "form-label" %>
+            <%= f.email_field :email,
+                        class: "form-control",
+                        autofocus: true,
+                        autocomplete: "email",
+                        value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
+                        placeholder: "seu@email.com",
+                        required: true %>
+            <% if resource.pending_reconfirmation? %>
+              <div class="form-text text-warning mt-1">
+                <i class="bi bi-clock-history me-1"></i>
+                Aguardando confirmação para: <strong><%= resource.unconfirmed_email %></strong>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="d-grid mb-4">
+            <%= f.submit "Reenviar confirmação", class: "btn btn-primary btn-lg" %>
+          </div>
+        <% end %>
+
+        <div class="text-center">
+          <%= render "devise/shared/links" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer info -->
+    <div class="text-center mt-4 text-muted small">
+      <p class="mb-1">&copy; <%= Time.current.year %> CI/CO Motel. Todos os direitos reservados.</p>
+    </div>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

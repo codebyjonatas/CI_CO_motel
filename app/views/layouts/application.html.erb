@@ -9,8 +9,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
-
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
@@ -18,20 +16,31 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <%# Google Fonts: Plus Jakarta Sans %>
+    <%= tag.link rel: "preconnect", href: "https://fonts.googleapis.com" %>
+    <%= tag.link rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" %>
+    <%= tag.link rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" %>
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div class="container">
-        <%= link_to "Sys Motel", root_path, class: "navbar-brand" %>
+    <nav class="navbar navbar-expand-lg navbar-custom" id="mainNavbar">
+      <div class="container-narrow">
+        <%= link_to root_path, class: "navbar-brand-custom" do %>
+          <span class="logo-mark"><i class="bi bi-building"></i></span>
+          <span>Sys Motel</span>
+        <% end %>
         <button
           class="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -39,35 +48,42 @@
           <ul class="navbar-nav ms-auto">
             <% if user_signed_in? %>
               <li class="nav-item">
-                <%= link_to "Stays", stays_path, class: "nav-link" %>
+                <%= link_to "Estadias", stays_path, class: "nav-link nav-link-custom" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Quartos", rooms_path, class: "nav-link" %>
+                <%= link_to "Quartos", rooms_path, class: "nav-link nav-link-custom" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Comandas", tabs_dashboard_path, class: "nav-link nav-link-custom" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Relatórios", tabs_report_path, class: "nav-link nav-link-custom" %>
               </li>
               <li class="nav-item dropdown">
                 <a
-                  class="nav-link dropdown-toggle"
+                  class="nav-link nav-link-custom dropdown-toggle"
                   href="#"
                   role="button"
                   data-bs-toggle="dropdown"
+                  aria-expanded="false"
                 >
                   <%= current_user.name %>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-lg mt-2">
                   <li><%= link_to "Editar perfil", edit_user_registration_path, class: "dropdown-item" %></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><%= button_to "Sair",
                     destroy_user_session_path,
                     method: :delete,
-                    class: "dropdown-item" %></li>
+                    class: "dropdown-item text-danger" %></li>
                 </ul>
               </li>
             <% else %>
               <li class="nav-item">
-                <%= link_to "Entrar", new_user_session_path, class: "nav-link" %>
+                <%= link_to "Entrar", new_user_session_path, class: "nav-link nav-link-custom" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Cadastrar", new_user_registration_path, class: "nav-link" %>
+                <%= link_to "Começar grátis", new_user_registration_path, class: "btn btn-primary btn-sm ms-md-2" %>
               </li>
             <% end %>
           </ul>
@@ -75,20 +91,48 @@
       </div>
     </nav>
 
-    <div class="container">
-      <% flash.each do |type, msg| %>
-        <div
-          class="
-            alert alert-<%= type == "notice" ? "success" : "danger" %> alert-dismissible fade show
-          "
-          role="alert"
-        >
-          <%= msg %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      <% end %>
+    <main>
+      <div class="container-narrow">
+        <% flash.each do |type, msg| %>
+          <div
+            class="
+              alert alert-<%= type == "notice" ? "success" : type == "alert" ? "danger" : "info" %>
+              alert-dismissible fade show
+              mt-4
+            "
+            role="alert"
+          >
+            <%= msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
 
-      <%= yield %>
-    </div>
+        <%= yield %>
+      </div>
+    </main>
+
+    <footer class="section-sm border-top" style="border-color: var(--color-border) !important;">
+      <div class="container-narrow">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small text-muted">
+          <span>&copy; <%= Time.current.year %> CI/CO Motel. Todos os direitos reservados.</span>
+          <nav class="d-flex gap-4">
+            <a href="#" class="text-muted hover-text-primary">Termos</a>
+            <a href="#" class="text-muted hover-text-primary">Privacidade</a>
+            <a href="#" class="text-muted hover-text-primary">LGPD</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("turbo:load", () => {
+        const navbar = document.querySelector(".navbar-custom");
+        if (navbar) {
+          window.addEventListener("scroll", () => {
+            navbar.classList.toggle("scrolled", window.scrollY > 10);
+          }, { passive: true });
+        }
+      });
+    </script>
   </body>
 </html>

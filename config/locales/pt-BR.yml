@@ -13,6 +13,19 @@ pt-BR:
       default: "%d/%m/%Y %H:%M:%S"
       long: "%d/%m/%Y %H:%M"
       short: "%d/%m %H:%M"
+      time: "%H:%M"
+  number:
+    format:
+      delimiter: "."
+      separator: ","
+      precision: 2
+    currency:
+      format:
+        unit: "R$"
+        delimiter: "."
+        separator: ","
+        precision: 2
+        format: "%u %n"
   helpers:
     submit:
       stay:

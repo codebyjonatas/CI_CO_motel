@@ -1,62 +1,193 @@
-<%= form_with model: stay, class: "row g-3" do |f| %>
+<%= form_with model: stay, class: "stay-form" do |f| %>
   <% if stay.errors.any? %>
-    <div class="alert alert-danger">
-      <h6><%= pluralize stay.errors.count, "erro" %>
-        ao salvar:</h6>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <h6 class="mb-2"><%= pluralize stay.errors.count, "erro" %> ao salvar:</h6>
       <ul class="mb-0">
         <% stay.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
       </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   <% end %>
 
-  <div class="col-md-4">
-    <%= f.label :room_id, "Quarto", class: "form-label" %>
-    <%= f.collection_select :room_id,
-                        Room.available.order(:number),
-                        :id,
-                        :number,
-                        { prompt: "Selecione o quarto" },
-                        class: "form-select",
-                        required: true %>
-  </div>
+  <% if stay.persisted? && stay.active? %>
+    <div class="alert alert-info alert-dismissible fade show mb-4 d-flex align-items-start gap-3" role="alert">
+      <i class="bi bi-info-circle-fill text-primary" style="font-size: 1.25rem; margin-top: 0.125rem;"></i>
+      <div>
+        <strong>Editando estadia ativa</strong>
+        <p class="mb-0 small">Alterações no valor total são permitidas para registrar cobranças extras (produtos, serviços, etc). O quarto permanece ocupado até o check-out ou cancelamento.</p>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
 
-  <div class="col-md-4">
-    <%= f.label :price_period_id, "Período", class: "form-label" %>
-    <%= f.collection_radio_buttons :price_period_id, PricePeriod.all, :id, :name do |b| %>
-      <div class="form-check">
-        <%= b.radio_button class: "form-check-input" %>
-        <%= b.label class: "form-check-label" do %>
-          <%= b.text %>
-          —
-          <%= number_to_currency b.object.price %>
-        <% end %>
+  <div class="row g-4">
+    <!-- Seção 1: Seleção de Quarto e Período (apenas no new) -->
+    <% unless stay.persisted? %>
+      <div class="col-md-6">
+        <div class="card card-feature h-100">
+          <div class="icon-wrapper mb-3" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+            <i class="bi bi-door-open"></i>
+          </div>
+          <h4 class="mb-3">Quarto</h4>
+          <div class="mb-3">
+            <%= f.label :room_id, "Selecione o quarto", class: "form-label" %>
+            <%= f.collection_select :room_id,
+                            Room.available.order(:number),
+                            :id,
+                            :number,
+                            { prompt: "Selecione o quarto disponível" },
+                            class: "form-select",
+                            required: true %>
+            <div class="form-text">Apenas quartos com status <strong>Disponível</strong> são listados.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-feature h-100">
+          <div class="icon-wrapper mb-3" style="background-color: var(--color-accent-light); color: var(--color-accent);">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <h4 class="mb-3">Período de Preço</h4>
+          <div class="mb-3">
+            <%= f.label :price_period_id, "Selecione o período", class: "form-label" %>
+            <%= f.collection_radio_buttons :price_period_id, PricePeriod.all, :id, :name do |b| %>
+              <div class="card mb-2 border-0 bg-bg transition-base hover-bg-primary-light" style="border-color: var(--color-border) !important;">
+                <div class="card-body p-3">
+                  <%= b.radio_button class: "form-check-input me-2", style: "margin-top: 0.25rem;" %>
+                  <%= b.label class: "form-check-label fw-medium d-flex align-items-center justify-content-between gap-2 cursor-pointer mb-0" do %>
+                    <span><%= b.text %></span>
+                    <span class="fw-bold text-primary"><%= number_to_currency b.object.price %></span>
+                  <% end %>
+                  <div class="text-muted small ms-4 mt-1">
+                    <%= b.object.duration_minutes %> min
+                    <% if b.object.overnight? %>
+                      • <span class="badge-custom badge-primary"><i class="bi bi-moon-fill me-1"></i>Pernoite</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-feature h-100">
+          <div class="icon-wrapper mb-3" style="background-color: var(--color-success-light); color: var(--color-success);">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <h4 class="mb-3">Hora de Entrada</h4>
+          <div class="mb-3">
+            <%= f.label :check_in, "Data e hora do check-in", class: "form-label" %>
+            <%= f.datetime_field :check_in, class: "form-control", required: true, min: Time.current.iso8601(0)[0..15] %>
+            <div class="form-text">Por padrão, usa a hora atual arredondada.</div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Seção 2: Valor e Observação (sempre visível) -->
+    <div class="col-md-6">
+      <div class="card card-feature h-100">
+        <div class="icon-wrapper mb-3" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+          <i class="bi bi-cash-coin"></i>
+        </div>
+        <h4 class="mb-3"><%= stay.persisted? ? "Valor Total" : "Valor do Período" %></h4>
+        <div class="mb-3">
+          <% if stay.persisted? %>
+            <%= f.label :total_value, "Valor total (R$)", class: "form-label" %>
+            <div class="input-group">
+              <span class="input-group-text">R$</span>
+              <%= f.number_field :total_value, step: 0.01, class: "form-control", required: true, placeholder: "0,00" %>
+            </div>
+            <div class="form-text">
+              <% if stay.active? %>
+                Altere para adicionar <strong>cobranças extras</strong> (consumo, serviços, etc). O valor base do período é <%= number_to_currency stay.price_period.price %>.
+              <% else %>
+                Valor final da estadia. Período base: <%= number_to_currency stay.price_period.price %>.
+              <% end %>
+            </div>
+          <% else %>
+            <div class="input-group">
+              <span class="input-group-text">R$</span>
+              <input type="text" class="form-control bg-bg text-muted fw-semibold" readonly value="Será definido pelo período selecionado">
+            </div>
+            <div class="form-text">O valor é travado automaticamente pelo período de preço escolhido.</div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card card-feature h-100">
+        <div class="icon-wrapper mb-3" style="background-color: var(--color-warning-light); color: var(--color-warning);">
+          <i class="bi bi-chat-square-text"></i>
+        </div>
+        <h4 class="mb-3">Observação</h4>
+        <div class="mb-3">
+          <%= f.label :observation, "Observações (opcional)", class: "form-label" %>
+          <%= f.text_area :observation, class: "form-control", rows: 3, placeholder: "Produtos consumidos, serviços extras, observações..." %>
+          <div class="form-text">Registre consumos, danos, ou qualquer informação relevante.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 3: Confirmação de senha (apenas no new) -->
+    <% unless stay.persisted? %>
+      <div class="col-md-6">
+        <div class="card card-feature h-100 border-warning" style="border-width: 2px !important;">
+          <div class="icon-wrapper mb-3" style="background-color: var(--color-warning-light); color: var(--color-warning);">
+            <i class="bi bi-shield-lock-fill"></i>
+          </div>
+          <h4 class="mb-3">Autorização</h4>
+          <div class="mb-3">
+            <%= f.label :password, "Confirme sua senha", class: "form-label" %>
+            <%= f.password_field :password,
+                         class: "form-control",
+                         required: true,
+                         placeholder: "Digite sua senha para autorizar o check-in",
+                         autocomplete: "current-password" %>
+            <div class="form-text text-warning"><strong>Obrigatório:</strong> Reentrada de senha para validar o check-in.</div>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="col-md-6">
+        <div class="card card-feature h-100">
+          <div class="icon-wrapper mb-3" style="background-color: var(--color-success-light); color: var(--color-success);">
+            <i class="bi bi-toggle-on"></i>
+          </div>
+          <h4 class="mb-3">Status</h4>
+          <div class="mb-3">
+            <%= f.label :status, "Status da estadia", class: "form-label" %>
+            <%= f.select :status, Stay.statuses.keys.map { |s| [stay_status_label(s), s] }, { include_blank: false }, class: "form-select" %>
+            <div class="form-text">
+              <strong>Em andamento:</strong> Check-in ativo, quarto ocupado<br>
+              <strong>Finalizada:</strong> Check-out realizado, quarto liberado<br>
+              <strong>Cancelada:</strong> Estadia cancelada, quarto liberado
+            </div>
+          </div>
+        </div>
       </div>
     <% end %>
   </div>
 
-  <div class="col-md-4">
-    <%= f.label :check_in, "Hora de entrada", class: "form-label" %>
-    <%= f.datetime_field :check_in, class: "form-control", required: true %>
-  </div>
-
-  <div class="col-12">
-    <%= f.label :observation, "Observação", class: "form-label" %>
-    <%= f.text_area :observation, class: "form-control", rows: 2 %>
-  </div>
-
-  <div class="col-md-6">
-    <%= f.label :password, "Confirme sua senha", class: "form-label" %>
-    <%= f.password_field :password,
-                     class: "form-control",
-                     required: true,
-                     placeholder: "Digite sua senha para confirmar o check-in" %>
-    <div class="form-text">Necessário para autorizar o check-in.</div>
-  </div>
-
-  <div class="col-12">
-    <%= f.submit "Confirmar Check-in", class: "btn btn-primary btn-lg" %>
-    <%= link_to "Cancelar", stays_path, class: "btn btn-secondary" %>
+  <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top" style="border-color: var(--color-border) !important;">
+    <%= link_to stays_path, class: "btn btn-secondary btn-lg d-inline-flex align-items-center gap-2" do %>
+      <i class="bi bi-x-lg"></i>
+      <span>Cancelar</span>
+    <% end %>
+    <%= f.submit stay.persisted? ? "Atualizar Estadia" : "Confirmar Check-in", class: "btn btn-primary btn-lg d-inline-flex align-items-center gap-2" do %>
+      <% if stay.persisted? %>
+        <i class="bi bi-check-lg"></i>
+        <span>Salvar Alterações</span>
+      <% else %>
+        <i class="bi bi-door-open-fill"></i>
+        <span>Confirmar Check-in</span>
+      <% end %>
+    <% end %>
   </div>
 <% end %>

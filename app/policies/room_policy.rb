@@ -26,4 +26,26 @@ class RoomPolicy < ApplicationPolicy
   def destroy?
     user.has_role? :admin
   end
+
+  def start_cleaning?
+    manage_cleaning?
+  end
+
+  def finish_cleaning?
+    manage_cleaning?
+  end
+
+  def release_quarantine?
+    manage_cleaning?
+  end
+
+  def history?
+    true
+  end
+
+  private
+
+  def manage_cleaning?
+    user.has_any_role? :admin, :attendant
+  end
 end

@@ -21,6 +21,7 @@ gem "jbuilder"
 gem "devise"
 gem "rolify"
 gem "pundit"
+gem "aasm"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -69,3 +70,4 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+gem "kaminari"

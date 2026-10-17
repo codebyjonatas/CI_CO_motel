@@ -147,7 +147,7 @@
       <h2 class="h5 mb-0">Itens da Comanda</h2>
     </div>
     <span class="badge-custom <%= @tab.active_items.any? ? 'badge-success' : 'badge-muted' %>">
-      <%= @tab.active_items.count %> item(ns) ativo(s)
+      <i class="bi bi-cart-check me-1" aria-hidden="true"></i><%= @tab.active_items.count %> item(ns) ativo(s)
     </span>
   </div>
   <div class="card-body p-0">

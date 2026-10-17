@@ -62,7 +62,7 @@ class TabsControllerTest < ActionDispatch::IntegrationTest
     get new_room_tab_path(rooms(:one), walk_in: true)
 
     assert_response :success
-    assert_select "h1", /Nova Comanda Passante/
+    assert_select "h1", /Comanda Passante/
   end
 
   test "new tab form renders stay variant by default" do
@@ -71,8 +71,9 @@ class TabsControllerTest < ActionDispatch::IntegrationTest
     get new_room_tab_path(rooms(:one))
 
     assert_response :success
-    assert_select "h1", text: /Nova Comanda - Quarto #{rooms(:one).number}/
+    assert_select "h1", text: /Nova Comanda/
     assert_select "h1", text: /Passante/, count: 0
+    assert_select "p", text: /Quarto #{rooms(:one).number}/
   end
 
   test "show renders item actions and add item modal" do
@@ -86,6 +87,17 @@ class TabsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "form[action=?]", room_tab_tab_items_path(rooms(:one), tab)
     assert_select "form[action=?]", update_quantity_room_tab_tab_item_path(rooms(:one), tab, tab.tab_items.first)
+  end
+
+  test "index renders room tabs history" do
+    sign_in users(:admin)
+    Tab.create!(room: rooms(:one), opened_by: users(:admin), guest_identifier: "Fulano de Tal")
+
+    get room_tabs_path(rooms(:one))
+
+    assert_response :success
+    assert_select "h1", /Comandas do Quarto #{rooms(:one).number}/
+    assert_select "td", /Fulano de Tal/
   end
 
   test "transfer moves items and totals to destination tab" do

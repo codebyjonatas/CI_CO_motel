@@ -1,249 +1,259 @@
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="bi bi-receipt me-2"></i>Central de Comandas</h1>
-    <div class="d-flex gap-2">
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-plus-lg me-1"></i> Nova Comanda
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <% if @eligible_rooms.any? %>
-            <% @eligible_rooms.each do |room| %>
-              <li>
-                <%= link_to new_room_tab_path(room), class: "dropdown-item d-flex justify-content-between align-items-center" do %>
-                  <span>Quarto <%= room.number %></span>
-                  <span class="badge <%= room.status_badge_class %>"><%= room.status.humanize %></span>
-                <% end %>
-              </li>
-            <% end %>
-          <% else %>
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-5">
+  <div>
+    <span class="badge-custom badge-accent mb-2"><i class="bi bi-receipt me-1"></i>Bar</span>
+    <h1 class="h2 mb-0">Central de Comandas</h1>
+    <p class="text-muted small mt-1 mb-0">Acompanhe e gerencie as comandas de todos os quartos.</p>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-plus-lg"></i>
+        <span>Nova Comanda</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <% if @eligible_rooms.any? %>
+          <% @eligible_rooms.each do |room| %>
             <li>
-              <span class="dropdown-item-text text-muted small">
-                Nenhum quarto apto agora (disponível ou ocupado sem comanda aberta)
-              </span>
+              <%= link_to new_room_tab_path(room), class: "dropdown-item d-flex justify-content-between align-items-center gap-3" do %>
+                <span>Quarto <%= room.number %></span>
+                <span class="badge-custom <%= room.status_badge_class %>"><%= room_status_label(room.status) %></span>
+              <% end %>
             </li>
           <% end %>
-        </ul>
-      </div>
-      <%= link_to rooms_path, class: "btn btn-outline-secondary" do %>
-        <i class="bi bi-door-open me-1"></i> Por Quarto
-      <% end %>
-      <%= link_to tabs_report_path, class: "btn btn-outline-secondary" do %>
-        <i class="bi bi-graph-up me-1"></i> Relatórios
-      <% end %>
+        <% else %>
+          <li>
+            <span class="dropdown-item-text text-muted small">
+              Nenhum quarto apto agora (disponível ou ocupado sem comanda aberta)
+            </span>
+          </li>
+        <% end %>
+      </ul>
     </div>
+    <%= link_to rooms_path, class: "btn btn-secondary d-inline-flex align-items-center gap-2" do %>
+      <i class="bi bi-door-open"></i>
+      <span>Por Quarto</span>
+    <% end %>
+    <%= link_to tabs_report_path, class: "btn btn-secondary d-inline-flex align-items-center gap-2" do %>
+      <i class="bi bi-graph-up"></i>
+      <span>Relatórios</span>
+    <% end %>
   </div>
+</div>
 
-  <!-- Cards de Resumo -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-2">
-      <div class="card bg-success text-white">
-        <div class="card-body text-center">
-          <div class="fs-3 fw-bold"><%= @summary[:open] %></div>
-          <div class="small">Abertas</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div class="card bg-warning text-dark">
-        <div class="card-body text-center">
-          <div class="fs-3 fw-bold"><%= @summary[:closed] %></div>
-          <div class="small">Fechadas (aguardando)</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div class="card bg-dark text-white">
-        <div class="card-body text-center">
-          <div class="fs-3 fw-bold"><%= @summary[:paid] %></div>
-          <div class="small">Pagas</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div class="card bg-danger text-white">
-        <div class="card-body text-center">
-          <div class="fs-3 fw-bold"><%= @summary[:cancelled] %></div>
-          <div class="small">Canceladas</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div class="card bg-info text-white">
-        <div class="card-body text-center">
-          <div class="fs-4 fw-bold"><%= number_to_currency(@summary[:total_pending_value]) %></div>
-          <div class="small">Total Pendente</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-      <div class="card bg-primary text-white">
-        <div class="card-body text-center">
-          <div class="fs-4 fw-bold"><%= number_to_currency(@summary[:total_paid_today]) %></div>
-          <div class="small">Recebido Hoje</div>
-        </div>
+<!-- Cards de Resumo -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card stat-card-success">
+      <div class="stat-icon"><i class="bi bi-unlock"></i></div>
+      <div>
+        <div class="stat-value"><%= @summary[:open] %></div>
+        <div class="stat-label">Abertas</div>
       </div>
     </div>
   </div>
-
-  <!-- Filtros -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <%= form_with url: tabs_dashboard_path, method: :get, class: "row g-3", local: true do |f| %>
-        <div class="col-md-3">
-          <%= f.label :status, "Status", class: "form-label small" %>
-          <%= f.select :status, Tab.statuses.keys.map { |s| [s.humanize, s] }.unshift(["Todos", ""]), { selected: params[:status] }, class: "form-select form-select-sm" %>
-        </div>
-        <div class="col-md-3">
-          <%= f.label :room_id, "Quarto", class: "form-label small" %>
-          <%= f.collection_select :room_id, @rooms, :id, :number, { prompt: "Todos", selected: params[:room_id] }, class: "form-select form-select-sm" %>
-        </div>
-        <div class="col-md-2">
-          <%= f.label :date_from, "De", class: "form-label small" %>
-          <%= f.date_field :date_from, class: "form-control form-control-sm", value: params[:date_from] %>
-        </div>
-        <div class="col-md-2">
-          <%= f.label :date_to, "Até", class: "form-label small" %>
-          <%= f.date_field :date_to, class: "form-control form-control-sm", value: params[:date_to] %>
-        </div>
-        <div class="col-md-2 d-flex align-items-end">
-          <%= f.submit "Filtrar", class: "btn btn-primary w-100" %>
-        </div>
-      <% end %>
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card stat-card-warning">
+      <div class="stat-icon"><i class="bi bi-lock"></i></div>
+      <div>
+        <div class="stat-value"><%= @summary[:closed] %></div>
+        <div class="stat-label">Fechadas (aguardando pagamento)</div>
+      </div>
     </div>
   </div>
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card stat-card-muted">
+      <div class="stat-icon"><i class="bi bi-check2-circle"></i></div>
+      <div>
+        <div class="stat-value"><%= @summary[:paid] %></div>
+        <div class="stat-label">Pagas</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card stat-card-danger">
+      <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
+      <div>
+        <div class="stat-value"><%= @summary[:cancelled] %></div>
+        <div class="stat-label">Canceladas</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card stat-card-info">
+      <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+      <div>
+        <div class="stat-value"><%= number_to_currency(@summary[:total_pending_value]) %></div>
+        <div class="stat-label">Total pendente</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 col-xl-4">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-cash-coin"></i></div>
+      <div>
+        <div class="stat-value"><%= number_to_currency(@summary[:total_paid_today]) %></div>
+        <div class="stat-label">Recebido hoje</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- Tabela de Comandas -->
-  <div class="card">
-    <div class="card-body p-0">
+<!-- Filtros -->
+<div class="card mb-4">
+  <div class="card-body">
+    <%= form_with url: tabs_dashboard_path, method: :get, class: "row g-3", local: true do |f| %>
+      <div class="col-12 col-md-6 col-lg-3">
+        <%= f.label :status, "Status", class: "form-label small" %>
+        <%= f.select :status, Tab.statuses.keys.map { |s| [ t("activerecord.attributes.tab.statuses.#{s}", default: s.humanize), s ] }, { prompt: "Todos", selected: params[:status] }, class: "form-select form-select-sm" %>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3">
+        <%= f.label :room_id, "Quarto", class: "form-label small" %>
+        <%= f.collection_select :room_id, @rooms, :id, :number, { prompt: "Todos", selected: params[:room_id] }, class: "form-select form-select-sm" %>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <%= f.label :date_from, "De", class: "form-label small" %>
+        <%= f.date_field :date_from, class: "form-control form-control-sm", value: params[:date_from] %>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <%= f.label :date_to, "Até", class: "form-label small" %>
+        <%= f.date_field :date_to, class: "form-control form-control-sm", value: params[:date_to] %>
+      </div>
+      <div class="col-12 col-md-4 col-lg-2 d-flex align-items-end">
+        <%= f.submit "Filtrar", class: "btn btn-primary w-100" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Tabela de Comandas -->
+<article class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-list-ul text-primary"></i>
+      <h2 class="h5 mb-0">Comandas</h2>
+    </div>
+    <span class="badge-custom badge-muted"><%= @tabs.total_count %> registro(s)</span>
+  </div>
+  <div class="card-body p-0">
+    <% if @tabs.any? %>
       <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Quarto</th>
-              <th>Cliente / Estadia</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>Itens</th>
-              <th class="text-end">Subtotal</th>
-              <th class="text-end">Desc.</th>
-              <th class="text-end"><strong>Total</strong></th>
-              <th>Abertura</th>
-              <th>Fechamento</th>
-              <th>Ações</th>
+        <table class="table table-hover mb-0">
+          <thead style="background-color: var(--color-bg); border-bottom: 2px solid var(--color-border);">
+            <tr class="text-muted small text-uppercase" style="letter-spacing: 0.05em;">
+              <th class="border-0 ps-3 py-3 fw-semibold">ID</th>
+              <th class="border-0 py-3 fw-semibold">Quarto</th>
+              <th class="border-0 py-3 fw-semibold">Cliente / Estadia</th>
+              <th class="border-0 py-3 fw-semibold">Tipo</th>
+              <th class="border-0 py-3 fw-semibold">Status</th>
+              <th class="border-0 py-3 fw-semibold text-center">Itens</th>
+              <th class="border-0 py-3 fw-semibold text-end">Subtotal</th>
+              <th class="border-0 py-3 fw-semibold text-end">Desc.</th>
+              <th class="border-0 py-3 fw-semibold text-end">Total</th>
+              <th class="border-0 py-3 fw-semibold">Abertura</th>
+              <th class="border-0 py-3 fw-semibold">Fechamento</th>
+              <th class="border-0 pe-3 py-3 fw-semibold text-end">Ações</th>
             </tr>
           </thead>
           <tbody>
             <% @tabs.each do |tab| %>
-              <tr>
-                <td><%= tab.id %></td>
+              <tr class="align-middle" style="border-bottom: 1px solid var(--color-border);">
+                <td class="ps-3 fw-semibold text-nowrap">#<%= tab.id %></td>
                 <td>
-                  <span class="badge <%= tab.room.status_badge_class %>">
-                    <%= tab.room.number %>
-                  </span>
+                  <span class="badge-custom <%= tab.room.status_badge_class %>"><%= tab.room.number %></span>
                 </td>
-                <td>
-                  <div class="fw-medium"><%= tab.guest_identifier %></div>
+                <td class="text-break">
+                  <div class="fw-medium text-foreground"><%= tab.guest_identifier %></div>
                   <% if tab.stay %>
-                    <div class="text-muted small">Estadia ##{tab.stay_id}</div>
+                    <div class="text-muted small">Estadia #<%= tab.stay_id %></div>
                   <% end %>
                 </td>
-                <td>
-                  <% if tab.walk_in? %>
-                    <span class="badge bg-warning text-dark">Passante</span>
-                  <% else %>
-                    <span class="badge bg-info">Estadia</span>
-                  <% end %>
-                </td>
+                <td><%= tab_type_badge(tab) %></td>
                 <td><%= badge_for_tab_status(tab.status) %></td>
-                <td><%= tab.active_items.count %></td>
+                <td class="text-center"><%= tab.active_items.count %></td>
                 <td class="text-end"><%= number_to_currency(tab.subtotal) %></td>
-                <td class="text-end"><%= number_to_currency(tab.discount) %></td>
-                <td class="text-end fw-bold"><%= number_to_currency(tab.total) %></td>
-                <td><%= l(tab.created_at, format: :short) %></td>
-                <td><%= tab.closed_at ? l(tab.closed_at, format: :short) : "-" %></td>
-                <td>
-                  <div class="btn-group btn-group-sm" role="group">
-                    <%= link_to room_tab_path(tab.room, tab), class: "btn btn-outline-primary", title: "Ver" do %>
+                <td class="text-end text-muted"><%= number_to_currency(tab.discount) %></td>
+                <td class="text-end fw-semibold"><%= number_to_currency(tab.total) %></td>
+                <td class="text-nowrap"><%= l(tab.created_at, format: :short) %></td>
+                <td class="text-nowrap"><%= tab.closed_at ? l(tab.closed_at, format: :short) : "—" %></td>
+                <td class="pe-3 text-end">
+                  <div class="d-inline-flex gap-1">
+                    <%= link_to room_tab_path(tab.room, tab), class: "btn btn-tertiary btn-xs", title: "Ver comanda" do %>
                       <i class="bi bi-eye"></i>
                     <% end %>
                     <% if tab.open? %>
-                      <%= button_to close_room_tab_path(tab.room, tab), method: :patch, class: "btn btn-outline-success", form: { data: { turbo_confirm: "Fechar comanda?" } }, title: "Fechar" do %>
-                        <i class="bi bi-check-circle"></i>
+                      <%= link_to "#", class: "btn btn-tertiary btn-xs", title: "Adicionar item", data: { bs_toggle: "modal", bs_target: "#addItemModal#{tab.id}" } do %>
+                        <i class="bi bi-plus-lg"></i>
                       <% end %>
-                      <% if policy(tab).pay? %>
-                        <%= button_to pay_room_tab_path(tab.room, tab), method: :patch, class: "btn btn-outline-dark", form: { data: { turbo_confirm: "Marcar como paga?" } }, title: "Pagar" do %>
-                          <i class="bi bi-cash"></i>
-                        <% end %>
+                      <%= button_to close_room_tab_path(tab.room, tab), method: :patch, class: "btn btn-tertiary btn-xs", title: "Fechar comanda", form: { data: { turbo_confirm: "Fechar comanda ##{tab.id}?" } } do %>
+                        <i class="bi bi-lock"></i>
                       <% end %>
-                      <%= link_to "#add-item-modal-#{tab.id}", class: "btn btn-outline-info", data: { bs_toggle: "modal", bs_target: "#addItemModal#{tab.id}" }, title: "Add Item" do %>
-                        <i class="bi bi-plus"></i>
-                      <% end %>
-                    <% elsif tab.closed? && policy(tab).pay? %>
-                      <%= button_to pay_room_tab_path(tab.room, tab), method: :patch, class: "btn btn-outline-dark", form: { data: { turbo_confirm: "Confirmar pagamento?" } }, title: "Pagar" do %>
-                        <i class="bi bi-cash"></i>
+                    <% end %>
+                    <% if (tab.open? || tab.closed?) && policy(tab).pay? %>
+                      <%= button_to pay_room_tab_path(tab.room, tab), method: :patch, class: "btn btn-tertiary btn-xs text-success", title: "Marcar como paga", form: { data: { turbo_confirm: "Marcar comanda ##{tab.id} como paga?" } } do %>
+                        <i class="bi bi-cash-coin"></i>
                       <% end %>
                     <% end %>
                   </div>
                 </td>
               </tr>
-
-              <!-- Modal Adicionar Item (por comanda) -->
-              <div class="modal fade" id="addItemModal<%= tab.id %>" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Adicionar Item - Comanda ##{tab.id}</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <%= form_with url: room_tab_tab_items_path(tab.room, tab), local: true do |f| %>
-                      <div class="modal-body">
-                        <div class="row mb-3">
-                          <div class="col-md-6">
-                            <%= f.label :product_id, "Produto", class: "form-label" %>
-                            <%= f.collection_select :product_id, Product.active.ordered, :id, :name, { prompt: "Selecione...", include_blank: false }, { class: "form-select" } %>
-                          </div>
-                          <div class="col-md-3">
-                            <%= f.label :quantity, "Quantidade", class: "form-label" %>
-                            <%= f.number_field :quantity, value: 1, min: 1, class: "form-control" %>
-                          </div>
-                          <div class="col-md-3">
-                            <%= f.label :unit_price, "Preço Unit. (opcional)", class: "form-label" %>
-                            <%= f.number_field :unit_price, step: "0.01", min: "0", class: "form-control", placeholder: "Padrão do produto" %>
-                          </div>
-                        </div>
-                        <div class="mb-3">
-                          <%= f.label :notes, "Observações", class: "form-label" %>
-                          <%= f.text_field :notes, class: "form-control", placeholder: "Ex: Sem gelo, bem gelado" %>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <%= f.submit "Adicionar", class: "btn btn-primary" %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
             <% end %>
           </tbody>
         </table>
       </div>
-
-      <!-- Paginação -->
-      <% if @tabs.total_pages > 1 %>
-        <div class="card-footer p-3">
-          <%= paginate @tabs, theme: 'bootstrap-5' %>
+    <% else %>
+      <div class="text-center py-5">
+        <div class="icon-wrapper mx-auto mb-3" style="background-color: #F1F5F9; color: var(--color-muted);">
+          <i class="bi bi-receipt-cutoff"></i>
         </div>
-      <% end %>
-    </div>
+        <p class="text-muted mb-0">Nenhuma comanda encontrada com os filtros atuais.</p>
+      </div>
+    <% end %>
   </div>
-
-  <% if @tabs.empty? %>
-    <div class="text-center py-5">
-      <i class="bi bi-receipt-cutoff display-1 text-muted"></i>
-      <p class="text-muted mt-3">Nenhuma comanda encontrada com os filtros atuais</p>
+  <% if @tabs.total_pages > 1 %>
+    <div class="card-footer d-flex justify-content-center py-3">
+      <%= paginate @tabs, theme: 'bootstrap-5' %>
     </div>
   <% end %>
-</div>
+</article>
+
+<!-- Modais: Adicionar Item (uma por comanda aberta) -->
+<% @tabs.select(&:open?).each do |tab| %>
+  <div class="modal fade" id="addItemModal<%= tab.id %>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Adicionar Item — Comanda #<%= tab.id %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <%= form_with url: room_tab_tab_items_path(tab.room, tab), local: true do |f| %>
+          <div class="modal-body">
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-md-6">
+                <%= f.label :product_id, "Produto", class: "form-label" %>
+                <%= f.collection_select :product_id, Product.active.ordered, :id, :name, { prompt: "Selecione..." }, { class: "form-select" } %>
+              </div>
+              <div class="col-6 col-md-3">
+                <%= f.label :quantity, "Quantidade", class: "form-label" %>
+                <%= f.number_field :quantity, value: 1, min: 1, class: "form-control" %>
+              </div>
+              <div class="col-6 col-md-3">
+                <%= f.label :unit_price, "Preço Unit.", class: "form-label" %>
+                <%= f.number_field :unit_price, step: "0.01", min: "0", class: "form-control", placeholder: "Padrão" %>
+                <div class="form-text">Opcional</div>
+              </div>
+            </div>
+            <div class="mb-0">
+              <%= f.label :notes, "Observações", class: "form-label" %>
+              <%= f.text_field :notes, class: "form-control", placeholder: "Ex: Sem gelo, bem gelado" %>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-tertiary" data-bs-dismiss="modal">Cancelar</button>
+            <%= f.submit "Adicionar", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

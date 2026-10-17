@@ -234,6 +234,28 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   text-decoration: none;
 }
 
+/* Destrutivo - Vermelho (pill, alinhado ao CTA) */
+.btn-danger {
+  background-color: var(--color-destructive);
+  border-color: var(--color-destructive);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #B91C1C;
+  border-color: #B91C1C;
+  color: #FFFFFF;
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-danger:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 /* Tamanhos */
 .btn-lg { padding: 1rem 2rem; font-size: var(--text-body); height: 56px; }
 .btn-sm { padding: 0.5rem 1rem; font-size: var(--text-xs); height: 40px; }
@@ -406,6 +428,78 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   background-color: var(--color-success-light);
   color: var(--color-success);
 }
+
+.badge-warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.badge-danger {
+  background-color: var(--color-destructive-light);
+  color: var(--color-destructive);
+}
+
+.badge-info {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.badge-muted {
+  background-color: #F1F5F9;
+  color: var(--color-muted);
+}
+
+.badge-dark {
+  background-color: var(--color-foreground);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Componentes: Stat Card (resumos numéricos)
+   ========================================================================== */
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card .stat-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.stat-card .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-foreground);
+}
+
+.stat-card .stat-label {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.stat-card.stat-card-success .stat-icon { background-color: var(--color-success-light); color: var(--color-success); }
+.stat-card.stat-card-warning .stat-icon { background-color: var(--color-warning-light); color: var(--color-warning); }
+.stat-card.stat-card-danger  .stat-icon { background-color: var(--color-destructive-light); color: var(--color-destructive); }
+.stat-card.stat-card-info    .stat-icon { background-color: #EFF6FF; color: #1D4ED8; }
+.stat-card.stat-card-muted   .stat-icon { background-color: #F1F5F9; color: var(--color-muted); }
 
 /* ==========================================================================
    Componentes: Formulários

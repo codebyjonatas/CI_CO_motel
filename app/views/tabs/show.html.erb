@@ -4,15 +4,15 @@
       <i class="bi bi-arrow-left"></i>
       <span>Voltar</span>
     <% end %>
-    <span class="badge-custom badge-accent mb-2"><i class="bi bi-receipt me-1"></i>Comanda</span>
     <h1 class="h2 mb-0">Comanda #<%= @tab.id %></h1>
     <p class="text-muted small mt-1 mb-0 d-flex flex-wrap align-items-center gap-2">
       <span><i class="bi bi-door-open me-1"></i>Quarto <%= @tab.room.number %></span>
       <span aria-hidden="true">•</span>
       <span><%= @tab.walk_in? ? "Passante: #{@tab.guest_identifier}" : "Estadia ##{@tab.stay_id}" %></span>
-      <span aria-hidden="true">•</span>
-      <%= badge_for_tab_status(@tab.status) %>
     </p>
+    <div class="mt-2">
+      <%= badge_for_tab_status(@tab.status) %>
+    </div>
   </div>
 
   <div class="d-flex flex-wrap gap-2">

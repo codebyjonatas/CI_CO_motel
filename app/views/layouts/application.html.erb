@@ -48,16 +48,16 @@
           <ul class="navbar-nav ms-auto">
             <% if user_signed_in? %>
               <li class="nav-item">
-                <%= link_to "Estadias", stays_path, class: "nav-link nav-link-custom" %>
+                <%= link_to "Estadias", stays_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'stays'}" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Quartos", rooms_path, class: "nav-link nav-link-custom" %>
+                <%= link_to "Quartos", rooms_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'rooms'}" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Comandas", tabs_dashboard_path, class: "nav-link nav-link-custom" %>
+                <%= link_to "Comandas", tabs_dashboard_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Relatórios", tabs_report_path, class: "nav-link nav-link-custom" %>
+                <%= link_to "Relatórios", tabs_report_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
               </li>
               <li class="nav-item dropdown">
                 <a

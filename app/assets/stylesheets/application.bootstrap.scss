@@ -154,7 +154,7 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   font-size: var(--text-sm);
   line-height: 1.5;
   padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   border: 2px solid transparent;
   transition: all var(--transition-base);
   cursor: pointer;
@@ -173,14 +173,26 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   pointer-events: none;
 }
 
-/* Primário - Accent (Laranja) - CTA Principal */
+/* Primário - Accent (Laranja) - CTA Principal (pill, tom acolhedor) */
 .btn-primary {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-accent-text);
+  font-weight: 600;
+  border-radius: var(--radius-full);
 }
 
-.btn-primary:hover:not(:disabled) {
+/* Alias - Accent (mesmo CTA principal, nomenclatura alternativa) */
+.btn-accent {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-accent:hover:not(:disabled) {
   background-color: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
   color: var(--color-accent-text);
@@ -189,7 +201,8 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   box-shadow: var(--shadow-md);
 }
 
-.btn-primary:active:not(:disabled) {
+.btn-primary:active:not(:disabled),
+.btn-accent:active:not(:disabled) {
   transform: scale(0.98);
 }
 
@@ -198,6 +211,7 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   background-color: transparent;
   border-color: var(--color-primary);
   color: var(--color-primary);
+  border-radius: var(--radius-full);
 }
 
 .btn-secondary:hover:not(:disabled) {
@@ -211,6 +225,7 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   background-color: transparent;
   border-color: transparent;
   color: var(--color-muted);
+  border-radius: var(--radius-full);
 }
 
 .btn-tertiary:hover:not(:disabled) {
@@ -238,6 +253,7 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
   overflow: hidden;
+  min-height: 100%;
 }
 
 .card:hover {
@@ -267,7 +283,7 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   flex-direction: column;
 }
 
-.card-feature .icon-wrapper {
+.icon-wrapper {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-md);
@@ -350,6 +366,14 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
 .nav-link-custom:hover {
   color: var(--color-foreground);
   background-color: var(--color-border);
+  text-decoration: none;
+}
+
+/* Estado ativo da navegação (seção atual) */
+.nav-link-custom.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  font-weight: 600;
   text-decoration: none;
 }
 
@@ -493,6 +517,13 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
   padding: 0 var(--space-4);
 }
 
+/* Respiro vertical do conteúdo principal — evita que o último
+   elemento da página encoste na navbar ou no rodapé */
+main > .container-narrow {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-12);
+}
+
 @media (min-width: 768px) {
   .container-narrow { padding: 0 var(--space-6); }
 }
@@ -523,6 +554,9 @@ a:hover { color: var(--color-primary-hover); text-decoration: underline; }
 @media (min-width: 1024px) {
   .grid-4 { grid-template-columns: repeat(4, 1fr); }
 }
+
+.hover-text-primary:hover { color: var(--color-accent) !important; }
+.hover-bg-primary-light:hover { background-color: var(--color-primary-light) !important; }
 
 /* ==========================================================================
    Print Styles

@@ -31,38 +31,54 @@
 <!-- Cards de Resumo -->
 <div class="row g-3 mb-4">
   <div class="col-12 col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
-      <div>
-        <div class="stat-value"><%= number_to_currency(@report[:total_revenue]) %></div>
-        <div class="stat-label">Receita total</div>
+    <div class="card bg-primary text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= number_to_currency(@report[:total_revenue]) %></div>
+            <div class="small opacity-75">Receita total</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-currency-dollar"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <div class="stat-card stat-card-success">
-      <div class="stat-icon"><i class="bi bi-receipt"></i></div>
-      <div>
-        <div class="stat-value"><%= @report[:paid_tabs_count] %></div>
-        <div class="stat-label">Comandas pagas</div>
+    <div class="card bg-success text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= @report[:paid_tabs_count] %></div>
+            <div class="small opacity-75">Comandas pagas</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-receipt"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <div class="stat-card stat-card-info">
-      <div class="stat-icon"><i class="bi bi-bar-chart"></i></div>
-      <div>
-        <div class="stat-value"><%= number_to_currency(@report[:average_ticket]) %></div>
-        <div class="stat-label">Ticket médio</div>
+    <div class="card bg-info text-dark border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= number_to_currency(@report[:average_ticket]) %></div>
+            <div class="small opacity-75">Ticket médio</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-bar-chart"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-3">
-    <div class="stat-card stat-card-warning">
-      <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
-      <div>
-        <div class="stat-value"><%= number_to_currency(@report[:open_value].to_f + @report[:closed_value].to_f) %></div>
-        <div class="stat-label">Em aberto</div>
+    <div class="card bg-warning text-dark border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= number_to_currency(@report[:open_value].to_f + @report[:closed_value].to_f) %></div>
+            <div class="small opacity-75">Em aberto</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-hourglass-split"></i></div>
+        </div>
       </div>
     </div>
   </div>

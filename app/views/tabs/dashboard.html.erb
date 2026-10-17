@@ -45,56 +45,80 @@
 <!-- Cards de Resumo -->
 <div class="row g-3 mb-4">
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card stat-card-success">
-      <div class="stat-icon"><i class="bi bi-unlock"></i></div>
-      <div>
-        <div class="stat-value"><%= @summary[:open] %></div>
-        <div class="stat-label">Abertas</div>
+    <div class="card bg-success text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= @summary[:open] %></div>
+            <div class="small opacity-75">Abertas</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-unlock"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card stat-card-warning">
-      <div class="stat-icon"><i class="bi bi-lock"></i></div>
-      <div>
-        <div class="stat-value"><%= @summary[:closed] %></div>
-        <div class="stat-label">Fechadas (aguardando pagamento)</div>
+    <div class="card bg-warning text-dark border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= @summary[:closed] %></div>
+            <div class="small opacity-75">Fechadas (aguardando pagamento)</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-lock"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card stat-card-muted">
-      <div class="stat-icon"><i class="bi bi-check2-circle"></i></div>
-      <div>
-        <div class="stat-value"><%= @summary[:paid] %></div>
-        <div class="stat-label">Pagas</div>
+    <div class="card bg-secondary text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= @summary[:paid] %></div>
+            <div class="small opacity-75">Pagas</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-check2-circle"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card stat-card-danger">
-      <div class="stat-icon"><i class="bi bi-x-circle"></i></div>
-      <div>
-        <div class="stat-value"><%= @summary[:cancelled] %></div>
-        <div class="stat-label">Canceladas</div>
+    <div class="card bg-danger text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= @summary[:cancelled] %></div>
+            <div class="small opacity-75">Canceladas</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-x-circle"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card stat-card-info">
-      <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-      <div>
-        <div class="stat-value"><%= number_to_currency(@summary[:total_pending_value]) %></div>
-        <div class="stat-label">Total pendente</div>
+    <div class="card bg-info text-dark border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= number_to_currency(@summary[:total_pending_value]) %></div>
+            <div class="small opacity-75">Total pendente</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-cash-stack"></i></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-12 col-sm-6 col-xl-4">
-    <div class="stat-card">
-      <div class="stat-icon"><i class="bi bi-cash-coin"></i></div>
-      <div>
-        <div class="stat-value"><%= number_to_currency(@summary[:total_paid_today]) %></div>
-        <div class="stat-label">Recebido hoje</div>
+    <div class="card bg-primary text-white border-0 h-100">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="stat-value fs-3 fw-bold mb-1"><%= number_to_currency(@summary[:total_paid_today]) %></div>
+            <div class="small opacity-75">Recebido hoje</div>
+          </div>
+          <div class="stat-icon fs-1 opacity-50"><i class="bi bi-cash-coin"></i></div>
+        </div>
       </div>
     </div>
   </div>

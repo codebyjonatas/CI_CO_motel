@@ -21,7 +21,11 @@ module SysCheckInCheckOut
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    config.time_zone = "Brasilia"
+    # Fuso de exibição (o banco continua gravando em UTC).
+    # "America/Sao_Paulo" é o nome canônico da zona de Brasília.
+    config.time_zone = ENV.fetch("APP_TIME_ZONE", "America/Sao_Paulo")
+    # Timestamps são persistidos em UTC e convertidos para o fuso acima na leitura.
+    config.active_record.default_timezone = :utc
     config.i18n.default_locale = "pt-BR"
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}").to_s]
     # config.eager_load_paths << Rails.root.join("extras")

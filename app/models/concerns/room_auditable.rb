@@ -49,6 +49,7 @@ module RoomAuditable
 
     case [ from, to ]
     when [ "available", "occupied" ] then :check_in
+    when [ "occupied", "dirty" ] then :check_out
     when [ "occupied", "available" ] then :check_out
     when [ "occupied", "cancelled" ] then :cancel
     else

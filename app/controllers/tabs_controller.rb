@@ -1,9 +1,14 @@
 class TabsController < ApplicationController
-  before_action :set_room, only: [ :index, :new, :create, :create_walk_in ]
+  before_action :set_room, only: [ :index, :new, :create, :create_walk_in, :show, :close, :pay, :cancel, :transfer, :apply_discount ]
   before_action :set_tab, only: [ :show, :close, :pay, :cancel, :transfer, :apply_discount ]
-  before_action :authorize_tab, except: [ :index, :new, :create, :create_walk_in, :dashboard, :report ]
+  before_action :set_current_room, only: [ :index, :new, :create, :create_walk_in, :show, :close, :pay, :cancel, :transfer, :apply_discount ]
+  before_action :authorize_tab, only: [ :show, :close, :pay, :cancel, :transfer, :apply_discount ]
+  before_action :authorize_tab_creation, only: [ :create, :create_walk_in ]
+
+  after_action :verify_policy_scoped, only: :index, unless: :skip_authorization_verification?
 
   def index
+    authorize @room, :show?
     @tabs = policy_scope(Tab).for_room(@room).ordered
     @active_tab = @room.current_tab
   end
@@ -35,7 +40,7 @@ class TabsController < ApplicationController
   end
 
   def create
-    stay = params[:stay_id].present? ? Stay.find(params[:stay_id]) : nil
+    stay = @room.stays.active_stays.find(params[:stay_id]) if params[:stay_id].present?
 
     @tab = Tabs::CreateService.call(
       room: @room,
@@ -102,7 +107,8 @@ class TabsController < ApplicationController
 
   def transfer
     target_room = Room.find(params[:target_room_id])
-    target_stay = params[:target_stay_id].present? ? Stay.find(params[:target_stay_id]) : nil
+    authorize target_room, :show?
+    target_stay = target_room.stays.active_stays.find(params[:target_stay_id]) if params[:target_stay_id].present?
 
     result = Tabs::TransferService.call(
       source_tab: @tab,
@@ -143,10 +149,19 @@ class TabsController < ApplicationController
   end
 
   def set_tab
-    @tab = Tab.find(params[:id])
+    # A comanda precisa pertencer ao quarto informado na URL (evita IDOR).
+    @tab = @room.tabs.find(params[:id])
+  end
+
+  def set_current_room
+    Current.room = @room
   end
 
   def authorize_tab
     authorize @tab
+  end
+
+  def authorize_tab_creation
+    authorize Tab
   end
 end

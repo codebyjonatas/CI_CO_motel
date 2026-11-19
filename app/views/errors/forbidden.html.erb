@@ -1,0 +1,14 @@
+<div class="container-narrow py-5">
+  <div class="text-center">
+    <span class="badge-custom badge-danger">403</span>
+    <h1 class="h2 mt-3">Acesso não autorizado</h1>
+    <p class="text-muted">Seu usuário não tem permissão para acessar este recurso.</p>
+
+    <% if current_user&.admin? || current_user&.attendant? %>
+      <%= link_to "Voltar para o início", root_path, class: "btn btn-primary" %>
+    <% else %>
+      <p class="small text-muted">Solicite a um administrador a atribuição de um perfil de acesso.</p>
+      <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+</div>

@@ -11,7 +11,20 @@ module DiscountLimit
   module_function
 
   def config
-    Rails.application.credentials.discount_limits || {}
+    base = (Rails.application.credentials.discount_limits || {}).to_h.symbolize_keys
+    {
+      admin_max_percent: env_number("DISCOUNT_LIMITS_ADMIN_MAX_PERCENT") || base[:admin_max_percent],
+      admin_max_absolute: env_number("DISCOUNT_LIMITS_ADMIN_MAX_ABSOLUTE") || base[:admin_max_absolute],
+      attendant_max_percent: env_number("DISCOUNT_LIMITS_ATTENDANT_MAX_PERCENT") || base[:attendant_max_percent],
+      attendant_max_absolute: env_number("DISCOUNT_LIMITS_ATTENDANT_MAX_ABSOLUTE") || base[:attendant_max_absolute]
+    }.compact
+  end
+
+  # Lê um número de ENV; devolve nil quando ausente/vazio.
+  def env_number(key)
+    value = ENV[key]
+    return nil if value.nil? || value.strip.empty?
+    value.to_f
   end
 
   def max_percent_for(role)
@@ -34,6 +47,14 @@ module DiscountLimit
     role = user.try(:role) || user.try(:roles)&.first&.name || "attendant"
     max_pct = max_percent_for(role)
     max_abs = max_absolute_for(role)
+
+    if discount_percent.negative? || discount_absolute.negative?
+      raise LimitExceeded, "Desconto não pode ser negativo"
+    end
+
+    if discount_percent.positive? && discount_absolute.positive?
+      raise LimitExceeded, "Informe desconto percentual ou absoluto, não ambos"
+    end
 
     if discount_percent > max_pct
       raise LimitExceeded, "Desconto de #{discount_percent}% excede o limite de #{max_pct}% para #{role}"

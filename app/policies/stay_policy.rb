@@ -1,14 +1,14 @@
 class StayPolicy < ApplicationPolicy
   def index?
-    true
+    staff?
   end
 
   def show?
-    true
+    staff?
   end
 
   def create?
-    user.has_any_role? :admin, :attendant
+    staff?
   end
 
   def new?
@@ -16,7 +16,7 @@ class StayPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_any_role? :admin, :attendant
+    staff?
   end
 
   def edit?
@@ -24,13 +24,14 @@ class StayPolicy < ApplicationPolicy
   end
 
   def cancel?
-    user.has_any_role? :admin, :attendant
+    staff?
+  end
+
+  def check_out?
+    staff?
   end
 
   def destroy?
-    user.has_role? :admin
-  end
-  def check_out?
-    user.has_any_role? :admin, :attendant
+    user&.admin?
   end
 end

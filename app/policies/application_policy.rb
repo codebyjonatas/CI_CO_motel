@@ -50,4 +50,12 @@ class ApplicationPolicy
 
     attr_reader :user, :scope
   end
+
+  private
+
+  # Usuários sem papel (admin/atendente) não devem acessar dados operacionais,
+  # mesmo que consigam autenticar (ex.: conta criada manualmente sem role).
+  def staff?
+    user.present? && user.has_any_role?(:admin, :attendant)
+  end
 end

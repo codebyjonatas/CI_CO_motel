@@ -1,47 +1,54 @@
 class TabPolicy < ApplicationPolicy
   def index?
-    user.present?
+    staff?
   end
 
+  # O quarto vem da URL (TabsController#set_current_room), nunca do próprio
+  # registro, para que a checagem não seja tautológica.
   def show?
-    user.present?
+    staff? && record.room_id == Current.room&.id
   end
 
   def create?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def update?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def close?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def pay?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def cancel?
-    user.admin?
+    user&.admin?
   end
 
   def transfer?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def apply_discount?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def destroy?
-    user.admin?
+    user&.admin?
   end
 
   class Scope < Scope
     def resolve
-      scope.all
+      # Usuários só veem comandas dos quartos que têm acesso na requisição atual
+      if Current.room.present?
+        scope.where(room_id: Current.room.id)
+      else
+        scope.none
+      end
     end
   end
 end

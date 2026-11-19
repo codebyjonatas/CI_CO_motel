@@ -47,18 +47,20 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <% if user_signed_in? %>
-              <li class="nav-item">
-                <%= link_to "Estadias", stays_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'stays'}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Quartos", rooms_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'rooms'}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Comandas", tabs_dashboard_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Relatórios", tabs_report_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
-              </li>
+              <% if policy(Tab).index? %>
+                <li class="nav-item">
+                  <%= link_to "Estadias", stays_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'stays'}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Quartos", rooms_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'rooms'}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Comandas", tabs_dashboard_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
+                </li>
+                <li class="nav-item">
+                  <%= link_to "Relatórios", tabs_report_path, class: "nav-link nav-link-custom#{' active' if controller_name == 'tabs'}" %>
+                </li>
+              <% end %>
               <li class="nav-item dropdown">
                 <a
                   class="nav-link nav-link-custom dropdown-toggle"
@@ -70,8 +72,6 @@
                   <%= current_user.name %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-lg mt-2">
-                  <li><%= link_to "Editar perfil", edit_user_registration_path, class: "dropdown-item" %></li>
-                  <li><hr class="dropdown-divider"></li>
                   <li><%= button_to "Sair",
                     destroy_user_session_path,
                     method: :delete,
@@ -81,9 +81,6 @@
             <% else %>
               <li class="nav-item">
                 <%= link_to "Entrar", new_user_session_path, class: "nav-link nav-link-custom" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Começar grátis", new_user_registration_path, class: "btn btn-primary btn-sm ms-md-2" %>
               </li>
             <% end %>
           </ul>

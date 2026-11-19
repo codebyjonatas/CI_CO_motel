@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   rolify
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  # Cadastro público desabilitado: usuários são criados por administradores.
+  devise :database_authenticatable, :recoverable, :rememberable, :validatable
 
   validates :name, presence: true
 

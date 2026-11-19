@@ -44,13 +44,4 @@ module RoomsHelper
     else "bi-circle"
     end
   end
-
-  def stay_status_badge_class(status)
-    case status
-    when "active"      then "badge-primary"
-    when "completed"   then "badge-success"
-    when "cancelled"   then "bg-danger"
-    else "bg-secondary"
-    end
-  end
 end

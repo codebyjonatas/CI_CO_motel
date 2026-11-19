@@ -12,7 +12,7 @@ class RoomsController < ApplicationController
 
   def show
     authorize @room
-    @recent_stays = @room.stays.includes(:user, :price_period).order(check_in: :desc).limit(10)
+    @recent_stays = @room.stays.includes(:user).order(check_in: :desc).limit(10)
     @active_tab = @room.current_tab
     @active_cleaning_log = @room.active_cleaning_log
   end
@@ -108,6 +108,8 @@ class RoomsController < ApplicationController
     authorize @room
     @room.destroy!
     redirect_to rooms_url, notice: "Quarto removido com sucesso."
+  rescue ActiveRecord::RecordNotDestroyed
+    redirect_to @room, alert: destroy_error_message(@room)
   end
 
   private
@@ -117,6 +119,13 @@ class RoomsController < ApplicationController
   end
 
   def room_params
+    # O status pelo formulário é um override administrativo; as transições
+    # operacionais continuam passando por AASM nos endpoints dedicados.
     params.require(:room).permit(:number, :floor, :daily_rate, :status)
+  end
+
+  def destroy_error_message(record)
+    record.errors.full_messages.to_sentence.presence ||
+      "Não é possível remover este quarto porque existem estadias ou comandas vinculadas."
   end
 end

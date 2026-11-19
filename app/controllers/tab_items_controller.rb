@@ -4,6 +4,8 @@ class TabItemsController < ApplicationController
   before_action :authorize_tab_item, only: [ :void, :update_quantity ]
 
   def create
+    authorize @tab, :update?
+
     product = Product.find(params[:product_id])
     quantity = params[:quantity].to_i
     unit_price = params[:unit_price].presence&.to_d
@@ -74,7 +76,9 @@ class TabItemsController < ApplicationController
   private
 
   def set_tab
-    @tab = Tab.find(params[:tab_id])
+    # Garante que a comanda pertence ao quarto da URL.
+    @room = Room.find(params[:room_id])
+    @tab = @room.tabs.find(params[:tab_id])
   end
 
   def set_tab_item

@@ -143,4 +143,67 @@ class TabsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/R\$ 20,00/, response.body)
     assert_select "td", /Cerveja/
   end
+
+  test "user without a role is forbidden from operational data" do
+    sign_in User.create!(
+      name: "Sem Papel",
+      email: "sem.papel@example.com",
+      password: "123456",
+      password_confirmation: "123456"
+    )
+
+    get tabs_dashboard_url
+    assert_response :forbidden
+
+    get tabs_report_url
+    assert_response :forbidden
+
+    get stays_url
+    assert_response :forbidden
+
+    get rooms_url
+    assert_response :forbidden
+
+    get room_tabs_url(rooms(:one))
+    assert_response :forbidden
+  end
+
+  test "tab is scoped to the room in the URL" do
+    sign_in users(:admin)
+    tab = Tab.create!(room: rooms(:one), opened_by: users(:admin), guest_identifier: "João")
+
+    get room_tab_url(rooms(:two), tab)
+
+    assert_response :not_found
+  end
+
+  test "tab item creation requires a staff role" do
+    product = Product.create!(code: "AUTH1", name: "Cerveja", category: :beer, price: 10.0)
+    tab = Tab.create!(room: rooms(:one), opened_by: users(:admin), guest_identifier: "João")
+
+    sign_in User.create!(
+      name: "Sem Papel",
+      email: "sem.papel.item@example.com",
+      password: "123456",
+      password_confirmation: "123456"
+    )
+
+    assert_no_difference "TabItem.count" do
+      post room_tab_tab_items_url(rooms(:one), tab), params: { product_id: product.id, quantity: 1 }
+    end
+
+    assert_response :forbidden
+  end
+
+  test "attendant can add an item to an open tab" do
+    product = Product.create!(code: "AUTH2", name: "Cerveja", category: :beer, price: 10.0)
+    tab = Tab.create!(room: rooms(:one), opened_by: users(:admin), guest_identifier: "João")
+    sign_in users(:attendant)
+
+    assert_difference "TabItem.count", 1 do
+      post room_tab_tab_items_url(rooms(:one), tab), params: { product_id: product.id, quantity: 1 }
+    end
+
+    assert_redirected_to room_tab_path(rooms(:one), tab)
+  end
 end

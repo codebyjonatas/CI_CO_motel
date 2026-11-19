@@ -1,14 +1,14 @@
 class RoomPolicy < ApplicationPolicy
   def index?
-    true
+    staff?
   end
 
   def show?
-    true
+    staff?
   end
 
   def create?
-    user.has_role? :admin
+    user&.admin?
   end
 
   def new?
@@ -16,7 +16,7 @@ class RoomPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_role? :admin
+    user&.admin?
   end
 
   def edit?
@@ -24,28 +24,22 @@ class RoomPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_role? :admin
+    user&.admin?
   end
 
   def start_cleaning?
-    manage_cleaning?
+    staff?
   end
 
   def finish_cleaning?
-    manage_cleaning?
+    staff?
   end
 
   def release_quarantine?
-    manage_cleaning?
+    staff?
   end
 
   def history?
-    true
-  end
-
-  private
-
-  def manage_cleaning?
-    user.has_any_role? :admin, :attendant
+    staff?
   end
 end

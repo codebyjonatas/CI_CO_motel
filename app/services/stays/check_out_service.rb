@@ -11,13 +11,23 @@ module Stays
     def call
       return failure("Estadia já finalizada (status: #{@stay.status})") unless @stay.active?
 
-      account = CloseAccountService.call(stay: @stay, user: @user, notes: @notes)
-      return failure(account.error) unless account.success?
+      error = nil
 
+      # Fechamento de comandas + conclusão da estadia na mesma transação:
+      # se o quarto/log falhar, nenhuma comanda fica fechada pela metade.
       Stay.transaction do
+        account = CloseAccountService.call(stay: @stay, user: @user, notes: @notes)
+
+        unless account.success?
+          error = account.error
+          raise ActiveRecord::Rollback
+        end
+
         @stay.update!(check_out: Time.current, status: :completed)
         release_room
       end
+
+      return failure(error) if error
 
       success(@stay)
     rescue ActiveRecord::RecordInvalid => e

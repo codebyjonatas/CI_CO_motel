@@ -1,18 +1,18 @@
 class TabItemPolicy < ApplicationPolicy
   def create?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def update?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def void?
-    user.admin? || user.attendant?
+    staff?
   end
 
   def destroy?
-    user.admin?
+    user&.admin?
   end
 
   class Scope < Scope

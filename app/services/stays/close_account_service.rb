@@ -15,7 +15,9 @@ module Stays
       cancelled = []
       error = nil
 
-      Stay.transaction do
+      # requires_new garante um savepoint quando chamado dentro da transação
+      # do CheckOutService, sem impedir o rollback do fluxo externo.
+      Stay.transaction(requires_new: true) do
         @stay.tabs.where(status: :open).each do |tab|
           if tab.active_items.exists?
             result = Tabs::CloseService.call(tab: tab, user: @user, notes: @notes || DEFAULT_NOTES)

@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+#
+# bin/setup-env — gera .env.local a partir do Bitwarden
+#
+# Requisitos: bw (Bitwarden CLI) e jq.
+#   Linux:  sudo snap install bitwarden-cli   (ou baixe o binário oficial)
+#   macOS:  brew install bitwarden-cli
+#
+# Uso:
+#   bin/setup-env            # cria/atualiza .env.local (dev)
+#   bin/setup-env --check    # apenas valida se os itens existem, sem escrever
+#   bin/setup-env --force    # sobrescreve .env.local sem perguntar
+#
+# Os nomes dos itens podem ser sobrescritos por variáveis de ambiente,
+# útil se você renomear algo no vault.
+#
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OUT="${OUT:-$ROOT/.env.local}"
+
+ITEM_MASTER_KEY="${ITEM_MASTER_KEY:-CI-CO Motel | Rails Master Key (dev)}"
+ITEM_DB="${ITEM_DB:-CI-CO Motel | Database (dev)}"
+ITEM_SMTP="${ITEM_SMTP:-CI-CO Motel | SMTP}"
+
+MODE="write"
+case "${1:-}" in
+  --check) MODE="check" ;;
+  --force) MODE="force" ;;
+  "") ;;
+  *) echo "Opção inválida: $1" >&2; exit 2 ;;
+esac
+
+die() { printf '\033[31m✖ %s\033[0m\n' "$*" >&2; exit 1; }
+warn() { printf '\033[33m⚠ %s\033[0m\n' "$*" >&2; }
+ok() { printf '\033[32m✔ %s\033[0m\n' "$*"; }
+
+command -v bw >/dev/null 2>&1 || die "Bitwarden CLI (bw) não encontrado. Instale: https://bitwarden.com/help/cli/"
+command -v jq >/dev/null 2>&1 || die "jq não encontrado. Instale com o gerenciador de pacotes do seu sistema."
+
+# --- Sessão Bitwarden -------------------------------------------------------
+if [[ -z "${BW_SESSION:-}" ]]; then
+  status="$(bw status --raw 2>/dev/null | jq -r '.status // "unauthenticated"')"
+  [[ "$status" == "unauthenticated" ]] && die "Não autenticado. Rode: bw login"
+
+  if [[ -n "${BW_PASSWORD:-}" ]]; then
+    BW_SESSION="$(bw unlock "$BW_PASSWORD" --raw)" || die "Falha ao desbloquear o vault."
+  else
+    echo "Desbloqueie o vault com a senha mestra:"
+    BW_SESSION="$(bw unlock --raw)" || die "Falha ao desbloquear o vault."
+  fi
+fi
+export BW_SESSION
+
+bw sync --session "$BW_SESSION" >/dev/null 2>&1 || warn "Não foi possível sincronizar o vault (seguindo com o cache local)."
+
+# --- Helpers ----------------------------------------------------------------
+# Retorna o JSON do item ou vazio se não existir
+bw_item() {
+  bw get item "$1" --session "$BW_SESSION" 2>/dev/null || true
+}
+
+# Extrai um custom field pelo nome
+bw_field() {
+  local name="$1" json="$2"
+  [[ -n "$json" ]] || return 0
+  printf '%s' "$json" | jq -r --arg n "$name" \
+    '([.fields[]? | select(.name == $n) | .value][0]) // empty'
+}
+
+bw_login() {
+  local key="$1" json="$2"
+  [[ -n "$json" ]] || return 0
+  printf '%s' "$json" | jq -r --arg k "$key" '.login[$k] // empty'
+}
+
+require_value() {
+  local label="$1" value="$2"
+  [[ -n "$value" ]] || die "Valor vazio para: $label (verifique o item no Bitwarden)"
+}
+
+# --- Coleta -----------------------------------------------------------------
+echo "Lendo itens do Bitwarden..."
+
+MASTER_KEY="$(bw get password "$ITEM_MASTER_KEY" --session "$BW_SESSION" 2>/dev/null || true)"
+require_value "RAILS_MASTER_KEY ($ITEM_MASTER_KEY)" "$MASTER_KEY"
+[[ ${#MASTER_KEY} -eq 32 ]] || die "RAILS_MASTER_KEY deveria ter 32 caracteres, veio com ${#MASTER_KEY}."
+
+DB_JSON="$(bw_item "$ITEM_DB")"
+DB_USER="$(bw_login username "$DB_JSON")"
+DB_PASS="$(bw_login password "$DB_JSON")"
+DB_HOST="$(bw_field host "$DB_JSON")"
+DB_PORT="$(bw_field port "$DB_JSON")"
+DB_NAME="$(bw_field database "$DB_JSON")"
+
+SMTP_JSON="$(bw_item "$ITEM_SMTP")"
+SMTP_USER="$(bw_login username "$SMTP_JSON")"
+SMTP_PASS="$(bw_login password "$SMTP_JSON")"
+SMTP_ADDRESS="$(bw_field address "$SMTP_JSON")"
+SMTP_PORT="$(bw_field port "$SMTP_JSON")"
+
+DATABASE_URL=""
+if [[ -n "$DB_HOST" && -n "$DB_NAME" ]]; then
+  creds="$DB_USER"
+  [[ -n "$DB_PASS" ]] && creds="$DB_USER:$DB_PASS"
+  port="${DB_PORT:-5432}"
+  DATABASE_URL="postgres://${creds}@${DB_HOST}:${port}/${DB_NAME}"
+fi
+
+if [[ "$MODE" == "check" ]]; then
+  ok "Item de master key encontrado e válido."
+  if [[ -n "$DB_JSON" ]]; then
+    ok "Item de banco encontrado (${DB_NAME:-database não informado})."
+  else
+    warn "Item de banco não encontrado ($ITEM_DB)."
+  fi
+  if [[ -n "$SMTP_JSON" ]]; then
+    ok "Item de SMTP encontrado."
+  else
+    warn "Item de SMTP não encontrado ($ITEM_SMTP) — opcional."
+  fi
+  [[ -n "$DATABASE_URL" ]] || warn "DATABASE_URL não será gerada (host/database ausentes no item de banco)."
+  echo
+  ok "Verificação concluída. Nada foi escrito."
+  exit 0
+fi
+
+if [[ -f "$OUT" && "$MODE" != "force" ]]; then
+  read -r -p "$OUT já existe. Sobrescrever? [y/N] " answer
+  [[ "$answer" =~ ^[yY]$ ]] || { echo "Abortado."; exit 0; }
+fi
+
+# --- Escrita ----------------------------------------------------------------
+umask 077
+tmp="$(mktemp "${OUT}.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT
+
+{
+  echo "# Gerado por bin/setup-env em $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  echo "# NÃO VERSIONAR. Fonte da verdade: Bitwarden (pasta CI-CO Motel)."
+  echo
+  echo "RAILS_MASTER_KEY=$MASTER_KEY"
+  [[ -n "$DATABASE_URL" ]] && echo "DATABASE_URL=$DATABASE_URL"
+  [[ -n "$SMTP_ADDRESS" ]] && echo "SMTP_ADDRESS=$SMTP_ADDRESS"
+  [[ -n "$SMTP_PORT" ]] && echo "SMTP_PORT=$SMTP_PORT"
+  [[ -n "$SMTP_USER" ]] && echo "SMTP_USER_NAME=$SMTP_USER"
+  [[ -n "$SMTP_PASS" ]] && echo "SMTP_PASSWORD=$SMTP_PASS"
+} > "$tmp"
+
+mv "$tmp" "$OUT"
+chmod 600 "$OUT"
+trap - EXIT
+
+ok "Escrito: $OUT (modo 600)"
+[[ -n "$DATABASE_URL" ]] || warn "Sem DATABASE_URL: o Rails usará socket local / peer auth do PostgreSQL."
+warn "Segredos de produção NÃO são gravados em disco. Use bin/kamal-with-secrets."
+echo
+echo "Próximos passos:"
+echo "  direnv allow          # carrega .env.local automaticamente"
+echo "  bin/rails db:prepare  # prepara o banco"

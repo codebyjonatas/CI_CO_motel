@@ -6,7 +6,10 @@ module RoomCleaningConfig
   module_function
 
   def config
-    Rails.application.credentials.room_cleaning || {}
+    base = (Rails.application.credentials.room_cleaning || {}).to_h.symbolize_keys
+    env_minutes = ENV["ROOM_CLEANING_QUARANTINE_MINUTES"]
+    env_minutes = nil if env_minutes.nil? || env_minutes.strip.empty?
+    { quarantine_minutes: env_minutes&.to_i || base[:quarantine_minutes] }.compact
   end
 
   def quarantine_minutes

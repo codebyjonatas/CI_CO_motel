@@ -9,6 +9,11 @@
 
 # Ignore all environment files.
 /.env*
+# Modelo e configuração do direnv não contêm segredos e devem ser versionados.
+!/.env.example
+!/.envrc
+# direnv overrides (o .envrc versionado não contém segredos)
+.envrc.local
 
 # Ignore all logfiles and tempfiles.
 /log/*

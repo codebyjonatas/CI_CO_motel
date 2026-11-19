@@ -1,0 +1,101 @@
+name: Deploy
+
+# Deploy manual enquanto não houver servidor de produção configurado.
+# Requer o GitHub Environment "production" com os secrets abaixo.
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Comando Kamal (ex.: deploy, app logs -f, rollback)"
+        required: true
+        default: "deploy"
+        type: string
+      dry_run:
+        description: "Apenas validar segredos, sem executar o Kamal"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      contents: read
+
+    env:
+      RAILS_ENV: production
+      # Bitwarden — API key (Settings → Security → Keys)
+      BW_CLIENTID: ${{ secrets.BW_CLIENTID }}
+      BW_CLIENTSECRET: ${{ secrets.BW_CLIENTSECRET }}
+      BW_PASSWORD: ${{ secrets.BW_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Install Bitwarden CLI
+        run: |
+          set -euo pipefail
+          BW_VERSION="2025.1.0"
+          curl -fsSL -o bw.zip \
+            "https://github.com/bitwarden/clients/releases/download/cli-v${BW_VERSION}/bw-linux-${BW_VERSION}.zip"
+          unzip -o bw.zip
+          sudo install -m 0755 bw /usr/local/bin/bw
+          bw --version
+
+      - name: Authenticate with Bitwarden
+        run: |
+          set -euo pipefail
+          : "${BW_CLIENTID:?defina o secret BW_CLIENTID}"
+          : "${BW_CLIENTSECRET:?defina o secret BW_CLIENTSECRET}"
+          : "${BW_PASSWORD:?defina o secret BW_PASSWORD}"
+          bw login --apikey
+          bw sync
+
+      - name: Configure SSH
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Validate secrets from Bitwarden
+        run: |
+          set -euo pipefail
+          BW_SESSION="$(bw unlock "$BW_PASSWORD" --raw)"
+          export BW_SESSION
+
+          MASTER_KEY="$(bw get password 'CI-CO Motel | Rails Master Key (prod)')"
+          test "${#MASTER_KEY}" -eq 32
+
+          DB_ITEM="$(bw get item 'CI-CO Motel | Database (prod)')"
+          DB_PASS="$(printf '%s' "$DB_ITEM" | jq -r '.login.password // empty')"
+          test -n "$DB_PASS"
+
+          APP_ITEM="$(bw get item 'CI-CO Motel | App Config (prod)')"
+          APP_HOST="$(printf '%s' "$APP_ITEM" | jq -r '([.fields[]? | select(.name=="APP_HOST") | .value][0]) // empty')"
+          test -n "$APP_HOST"
+
+          echo "✔ Segredos de produção presentes no Bitwarden (APP_HOST=$APP_HOST)"
+
+      - name: Deploy with Kamal
+        if: ${{ !inputs.dry_run }}
+        env:
+          KAMAL_COMMAND: ${{ inputs.command }}
+        run: |
+          set -euo pipefail
+          read -r -a args <<< "$KAMAL_COMMAND"
+          bin/kamal-with-secrets "${args[@]}"

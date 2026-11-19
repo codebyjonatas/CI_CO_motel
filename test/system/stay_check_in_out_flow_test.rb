@@ -1,6 +1,11 @@
 require "application_system_test_case"
 
 class StayCheckInOutFlowTest < ApplicationSystemTestCase
+  # Horário fixo (15h): períodos horários são rejeitados entre 22h e 6h,
+  # então usar Time.current tornaria o teste dependente do relógio do CI.
+  setup { travel_to Time.zone.local(2026, 1, 5, 15, 0, 0) }
+  teardown { travel_back }
+
   test "fluxo completo: check-in -> check-out (atendente)" do
     room = rooms(:one)
     attendant = users(:attendant)

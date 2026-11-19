@@ -2,6 +2,7 @@
 require "rubygems"
 require "bundler/setup"
 
-ARGV.unshift("--ensure-latest")
-
+# Não use --ensure-latest: ele faz o Brakeman sair com código 5 sempre que
+# existe uma versão mais nova publicada, quebrando o CI sem relação com o
+# código. A versão efetiva é controlada pelo Gemfile.lock.
 load Gem.bin_path("brakeman", "brakeman")

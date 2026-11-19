@@ -1,13 +1,25 @@
 puts "=== Criando usuários ==="
+
+# Em produção, exigir senhas via variáveis de ambiente
+if Rails.env.production?
+  admin_password = ENV.fetch("SEED_ADMIN_PASSWORD", nil)
+  attendant_password = ENV.fetch("SEED_ATTENDANT_PASSWORD", nil)
+  raise "Defina SEED_ADMIN_PASSWORD e SEED_ATTENDANT_PASSWORD em produção" if admin_password.blank? || attendant_password.blank?
+else
+  # Desenvolvimento/teste: senhas padrão (apenas para conveniência local)
+  admin_password = "123456"
+  attendant_password = "123456"
+end
+
 admin = User.find_or_create_by!(email: "admin@admin.com") do |u|
   u.name = "Administrador"
-  u.password = "123456"
+  u.password = admin_password
 end
 admin.add_role :admin
 
 attendant = User.find_or_create_by!(email: "atendente@admin.com") do |u|
   u.name = "Atendente"
-  u.password = "123456"
+  u.password = attendant_password
 end
 attendant.add_role :attendant
 

@@ -42,6 +42,8 @@ module RoomAuditable
   end
 
   def infer_trigger
+    return Current.room_status_trigger if Current.room_status_trigger.present?
+
     from = status_before_last_save
     to = status
 

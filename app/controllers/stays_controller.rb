@@ -2,7 +2,7 @@ class StaysController < ApplicationController
   before_action :set_stay, only: %i[show edit update destroy check_out cancel info]
 
   def index
-    @stays = Stay.includes(:room, :user, :price_period).ordered
+    @stays = Stay.includes(:room, :user).ordered
     @stays = @stays.where(room_id: params[:room_id]) if params[:room_id].present?
     @stays = @stays.where(status: params[:status]) if params[:status].present?
     authorize @stays
@@ -24,19 +24,18 @@ class StaysController < ApplicationController
 
   def create
     @stay = Stay.new(stay_params)
-    @stay.user = current_user
     authorize @stay
 
-    unless current_user.valid_password?(params[:stay][:password])
-      @stay.errors.add(:password, "incorreta")
-      render :new, status: :unprocessable_entity
-      return
-    end
+    result = Stays::CheckInService.call(
+      stay: @stay,
+      user: current_user,
+      password: params[:stay][:password]
+    )
 
-    if @stay.save
-      @stay.room.update!(status: :occupied)
-      redirect_to @stay, notice: "Check-in realizado com sucesso."
+    if result.success?
+      redirect_to result.data, notice: "Check-in realizado com sucesso."
     else
+      @stay.errors.add(:base, result.error)
       render :new, status: :unprocessable_entity
     end
   end
@@ -51,16 +50,27 @@ class StaysController < ApplicationController
   end
 
   def cancel
-     authorize @stay
-     @stay.update!(status: :cancelled)
-     @stay.room.update!(status: :available) if @stay.room.present?
-     redirect_to stays_url, notice: "Estadia cancelada."
+    authorize @stay
+
+    result = Stays::CancelService.call(
+      stay: @stay,
+      user: current_user,
+      reason: params[:reason]
+    )
+
+    if result.success?
+      redirect_to stays_url, notice: "Estadia cancelada."
+    else
+      redirect_to @stay, alert: result.error
+    end
   end
 
   def destroy
-     authorize @stay
-     @stay.destroy!
-     redirect_to stays_url, notice: "Registro excluído permanentemente."
+    authorize @stay
+    @stay.destroy!
+    redirect_to stays_url, notice: "Registro excluído permanentemente."
+  rescue ActiveRecord::RecordNotDestroyed
+    redirect_to @stay, alert: destroy_error_message(@stay)
   end
 
   def check_out
@@ -80,7 +90,7 @@ class StaysController < ApplicationController
       room_number: @stay.room.number,
       guest_name: @stay.main_guest&.full_name || @stay.user.name,
       check_in: @stay.check_in.strftime("%d/%m/%Y %H:%M"),
-      price_period: @stay.price_period.name
+      price_period: @stay.price_period_name
     }
   end
 
@@ -95,6 +105,16 @@ class StaysController < ApplicationController
   end
 
   def stay_update_params
-    params.require(:stay).permit(:total_value, :observation, :status)
+    permitted = [ :observation ]
+    # Valor total é ajuste administrativo (extras); status só muda pelos fluxos
+    # de check-out/cancelamento para não burlar o ciclo do quarto.
+    permitted << :total_value if current_user.admin?
+
+    params.require(:stay).permit(*permitted)
+  end
+
+  def destroy_error_message(record)
+    record.errors.full_messages.to_sentence.presence ||
+      "Não é possível excluir este registro porque existem vínculos ativos."
   end
 end

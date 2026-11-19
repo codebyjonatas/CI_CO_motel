@@ -34,13 +34,13 @@
           <div class="mb-3">
             <%= f.label :room_id, "Selecione o quarto", class: "form-label" %>
             <%= f.collection_select :room_id,
-                            Room.available.order(:number),
+                            Room.available_for_checkin.order(:number),
                             :id,
                             :number,
                             { prompt: "Selecione o quarto disponível" },
                             class: "form-select",
                             required: true %>
-            <div class="form-text">Apenas quartos com status <strong>Disponível</strong> são listados.</div>
+            <div class="form-text">Apenas quartos <strong>Disponíveis</strong> e fora de quarentena são listados.</div>
           </div>
         </div>
       </div>
@@ -53,17 +53,18 @@
           <h4 class="mb-3">Período de Preço</h4>
           <div class="mb-3">
             <%= f.label :price_period_id, "Selecione o período", class: "form-label" %>
-            <%= f.collection_radio_buttons :price_period_id, PricePeriod.all, :id, :name do |b| %>
+            <%= f.collection_radio_buttons :price_period_id, PricePeriodConfig.select_options, :last, :first do |b| %>
+              <% period = PricePeriodConfig.find_by_id(b.value) %>
               <div class="card mb-2 border-0 bg-bg transition-base hover-bg-primary-light" style="border-color: var(--color-border) !important;">
                 <div class="card-body p-3">
                   <%= b.radio_button class: "form-check-input me-2", style: "margin-top: 0.25rem;" %>
                   <%= b.label class: "form-check-label fw-medium d-flex align-items-center justify-content-between gap-2 cursor-pointer mb-0" do %>
                     <span><%= b.text %></span>
-                    <span class="fw-bold text-primary"><%= number_to_currency b.object.price %></span>
+                    <span class="fw-bold text-primary"><%= number_to_currency period[:price] %></span>
                   <% end %>
                   <div class="text-muted small ms-4 mt-1">
-                    <%= b.object.duration_minutes %> min
-                    <% if b.object.overnight? %>
+                    <%= period[:duration_minutes] %> min
+                    <% if period[:overnight] %>
                       • <span class="badge-custom badge-primary"><i class="bi bi-moon-fill me-1"></i>Pernoite</span>
                     <% end %>
                   </div>
@@ -98,18 +99,24 @@
         <h4 class="mb-3"><%= stay.persisted? ? "Valor Total" : "Valor do Período" %></h4>
         <div class="mb-3">
           <% if stay.persisted? %>
-            <%= f.label :total_value, "Valor total (R$)", class: "form-label" %>
-            <div class="input-group">
-              <span class="input-group-text">R$</span>
-              <%= f.number_field :total_value, step: 0.01, class: "form-control", required: true, placeholder: "0,00" %>
-            </div>
-            <div class="form-text">
-              <% if stay.active? %>
-                Altere para adicionar <strong>cobranças extras</strong> (consumo, serviços, etc). O valor base do período é <%= number_to_currency stay.price_period.price %>.
-              <% else %>
-                Valor final da estadia. Período base: <%= number_to_currency stay.price_period.price %>.
-              <% end %>
-            </div>
+            <% if current_user.admin? %>
+              <%= f.label :total_value, "Valor total (R$)", class: "form-label" %>
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                <%= f.number_field :total_value, step: 0.01, class: "form-control", required: true, placeholder: "0,00" %>
+              </div>
+              <div class="form-text">
+                <% if stay.active? %>
+                  Altere para adicionar <strong>cobranças extras</strong> (consumo, serviços, etc). O valor base do período é <%= number_to_currency stay.price_period_price %>.
+                <% else %>
+                  Valor final da estadia. Período base: <%= number_to_currency stay.price_period_price %>.
+                <% end %>
+              </div>
+            <% else %>
+              <%= f.label :total_value, "Valor total (R$)", class: "form-label" %>
+              <input type="text" class="form-control bg-bg text-muted fw-semibold" readonly value="<%= number_to_currency stay.total_value %>">
+              <div class="form-text">Somente administradores podem alterar o valor total.</div>
+            <% end %>
           <% else %>
             <div class="input-group">
               <span class="input-group-text">R$</span>

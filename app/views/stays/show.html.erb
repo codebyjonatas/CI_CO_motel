@@ -9,7 +9,7 @@
     <p class="text-muted small mt-1 mb-0">
       <%= stay_status_label(@stay.status) %> •
       <%= l @stay.check_in, format: :long %> •
-      <%= @stay.price_period.name %>
+      <%= @stay.price_period_name %>
     </p>
   </div>
   <div class="d-flex flex-wrap gap-2">
@@ -75,8 +75,8 @@
           <div class="col-12 col-md-6 mb-3">
             <dt class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Período</dt>
             <dd class="fw-semibold text-foreground mb-0 text-break">
-              <%= @stay.price_period.name %>
-              <span class="text-muted small ms-2"><%= number_to_currency @stay.price_period.price %></span>
+              <%= @stay.price_period_name %>
+              <span class="text-muted small ms-2"><%= number_to_currency @stay.price_period_price %></span>
             </dd>
           </div>
           <div class="col-12 col-md-6 mb-3">
@@ -121,8 +121,8 @@
           <div class="col-12 col-md-6 mb-3">
             <dt class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Período contratado</dt>
             <dd class="fw-semibold text-foreground mb-0 text-break">
-              <%= @stay.price_period.duration_minutes %> minutos
-              <% if @stay.price_period.overnight? %>
+              <%= @stay.price_period_duration_minutes %> minutos
+              <% if @stay.price_period_overnight? %>
                 <span class="badge-custom badge-primary ms-2"><i class="bi bi-moon-fill me-1"></i>Pernoite</span>
               <% end %>
             </dd>
@@ -231,20 +231,20 @@
         <dl class="row g-2 mb-0">
           <div class="col-6">
             <dt class="text-muted small">Período base</dt>
-            <dd class="fw-semibold mb-0"><%= number_to_currency @stay.price_period.price %></dd>
+            <dd class="fw-semibold mb-0"><%= number_to_currency @stay.price_period_price %></dd>
           </div>
           <div class="col-6 text-end">
             <dt class="text-muted small">Total cobrado</dt>
             <dd class="fw-semibold text-primary mb-0" style="font-size: 1.1rem;"><%= number_to_currency @stay.total_value %></dd>
           </div>
-          <% if @stay.total_value > @stay.price_period.price %>
+          <% if @stay.total_value > @stay.price_period_price %>
             <div class="col-6">
               <dt class="text-muted small">Extras</dt>
-              <dd class="fw-semibold text-warning mb-0">+<%= number_to_currency @stay.total_value - @stay.price_period.price %></dd>
+              <dd class="fw-semibold text-warning mb-0">+<%= number_to_currency @stay.total_value - @stay.price_period_price %></dd>
             </div>
             <div class="col-6 text-end">
               <dt class="text-muted small">Diferença</dt>
-              <dd class="fw-semibold text-warning mb-0"><%= number_to_currency @stay.total_value - @stay.price_period.price %></dd>
+              <dd class="fw-semibold text-warning mb-0"><%= number_to_currency @stay.total_value - @stay.price_period_price %></dd>
             </div>
           <% end %>
         </dl>

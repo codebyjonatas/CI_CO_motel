@@ -3,7 +3,7 @@
 one:
   room: one
   user: admin
-  price_period: one
+  price_period_id: 1
   check_in: <%= 1.hour.ago %>
   check_out:
   total_value: 18.00
@@ -15,7 +15,7 @@ one:
 two:
   room: two
   user: attendant
-  price_period: two
+  price_period_id: 2
   check_in: <%= 2.hours.ago %>
   check_out: <%= 1.hour.ago %>
   total_value: 32.00

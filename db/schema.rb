@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_15_135526) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_21_005514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -116,6 +116,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_135526) do
     t.index ["quarantine_until"], name: "index_rooms_on_quarantine_until"
     t.index ["status", "quarantine_until"], name: "index_rooms_on_status_and_quarantine_until", where: "(status = ANY (ARRAY[3, 4]))"
     t.index ["status"], name: "index_rooms_on_status"
+  end
+
+  create_table "stay_audit_logs", force: :cascade do |t|
+    t.integer "audit_action", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "field_name", null: false
+    t.text "new_value"
+    t.text "notes"
+    t.text "previous_value"
+    t.bigint "stay_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["created_at"], name: "index_stay_audit_logs_on_created_at"
+    t.index ["stay_id"], name: "index_stay_audit_logs_on_stay_id"
+    t.index ["user_id"], name: "index_stay_audit_logs_on_user_id"
   end
 
   create_table "stay_guests", force: :cascade do |t|
@@ -234,8 +249,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_135526) do
   add_foreign_key "room_status_logs", "stays", on_delete: :nullify
   add_foreign_key "room_status_logs", "users"
   add_foreign_key "rooms", "users", column: "cleaned_by_id"
+  add_foreign_key "stay_audit_logs", "stays", name: "stay_audit_logs_stay_id_fkey"
+  add_foreign_key "stay_audit_logs", "users", name: "stay_audit_logs_user_id_fkey"
   add_foreign_key "stay_guests", "stays"
-  add_foreign_key "stays", "price_periods"
   add_foreign_key "stays", "rooms"
   add_foreign_key "stays", "users"
   add_foreign_key "tab_item_audits", "tab_items"

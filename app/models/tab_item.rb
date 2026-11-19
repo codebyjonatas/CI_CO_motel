@@ -15,6 +15,7 @@ class TabItem < ApplicationRecord
   validate :unit_price_matches_product_price, on: :create
 
   before_validation :calculate_total_price
+  before_validation :sanitize_notes
 
   def void!(user:, reason:)
     raise "Item já estornado" if voided?
@@ -38,6 +39,10 @@ class TabItem < ApplicationRecord
 
   def calculate_total_price
     self.total_price = quantity * unit_price
+  end
+
+  def sanitize_notes
+    self.notes = Rails::Html::FullSanitizer.new.sanitize(notes) if notes.present?
   end
 
   def unit_price_matches_product_price

@@ -28,6 +28,7 @@ class Tab < ApplicationRecord
   scope :ordered, -> { order(created_at: :desc) }
 
   before_validation :set_defaults, on: :create
+  before_validation :sanitize_text_fields
 
   def walk_in?
     stay_id.blank?
@@ -129,5 +130,10 @@ class Tab < ApplicationRecord
     self.discount ||= 0
     self.total ||= 0
     self.status ||= :open
+  end
+
+  def sanitize_text_fields
+    self.guest_identifier = Rails::Html::FullSanitizer.new.sanitize(guest_identifier) if guest_identifier.present?
+    self.notes = Rails::Html::FullSanitizer.new.sanitize(notes) if notes.present?
   end
 end

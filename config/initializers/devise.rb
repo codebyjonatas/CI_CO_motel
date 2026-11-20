@@ -308,8 +308,12 @@ Devise.setup do |config|
   config.responder.error_status = :unprocessable_content
   config.responder.redirect_status = :see_other
 
-  # ==> Configuration for :registerable
-
+  # >> Configuration for :registerable
+  #
+  # NOTE: Registration is disabled via `skip: :registration` in config/routes.rb
+  # to keep the project portfólio-ready with fixed users (admin + attendant)
+  # and prevent sign-ups through the public login page.
+  #
   # When set to false, does not sign a user in automatically after their password is
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true

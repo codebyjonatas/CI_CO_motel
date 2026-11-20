@@ -24,10 +24,14 @@ end
 attendant.add_role :attendant
 
 puts "=== Criando quartos ==="
-[ 7, 8, 9, 10 ].each do |n|
-  Room.find_or_create_by!(number: n.to_s) do |r|
-    r.floor = 1
-  end
+{
+  7 => 18.0,
+  8 => 18.0,
+  9 => 22.0,
+  10 => 22.0
+}.each do |number, daily_rate|
+  room = Room.find_or_create_by!(number: number.to_s) { |r| r.floor = 1 }
+  room.update!(daily_rate: daily_rate) if room.daily_rate.zero?
 end
 
 puts "=== Criando períodos ==="

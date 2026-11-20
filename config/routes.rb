@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, skip: :registration
 
   # Dashboard global de comandas (fora do namespace de rooms)
   get "comandas", to: "tabs#dashboard", as: :tabs_dashboard

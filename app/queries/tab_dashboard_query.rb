@@ -11,7 +11,9 @@ class TabDashboardQuery
   end
 
   def summary
-    base = base_scope
+    # Agregações usam Tab.all: o `includes(:active_items)` do escopo da listagem
+    # vira JOIN e multiplica o total pelo número de itens de cada comanda.
+    base = Tab.all
     {
       open: base.where(status: :open).count,
       closed: base.where(status: :closed).count,

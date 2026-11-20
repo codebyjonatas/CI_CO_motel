@@ -59,11 +59,11 @@
 
     <!-- Comanda Ativa (se houver) -->
     <% if @active_tab %>
-      <div class="alert alert-info mb-4 d-flex justify-content-between align-items-center">
+      <div class="alert alert-info mb-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div class="d-flex align-items-center gap-3">
           <i class="bi bi-receipt fs-4"></i>
           <div>
-            <div class="fw-semibold">Comanda Ativa: ##{@active_tab.id}</div>
+            <div class="fw-semibold">Comanda Ativa: #<%= @active_tab.id %></div>
             <div class="text-muted small">
               <%= @active_tab.walk_in? ? "Passante: #{@active_tab.guest_identifier}" : "Estadia ##{@active_tab.stay_id}" %> •
               <%= number_to_currency @active_tab.total %>
@@ -182,7 +182,7 @@
                 <td class="fw-semibold"><%= number_to_currency stay.total_value %></td>
                 <td>
                   <span class="badge-custom <%= stay_status_badge_class(stay.status) %>">
-                    <%= stay.status.humanize %>
+                    <%= stay_status_label(stay.status) %>
                   </span>
                 </td>
               </tr>

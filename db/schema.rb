@@ -15,17 +15,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   enable_extension "pg_catalog.plpgsql"
 
   create_table "cleaning_logs", force: :cascade do |t|
+    t.bigint "room_id", null: false
+    t.bigint "stay_id"
     t.bigint "cleaned_by_id"
-    t.datetime "created_at", null: false
+    t.bigint "inspected_by_id"
+    t.integer "status"
+    t.datetime "started_at"
     t.datetime "finished_at"
     t.datetime "inspected_at"
-    t.bigint "inspected_by_id"
     t.text "notes"
     t.text "rejection_reason"
-    t.bigint "room_id", null: false
-    t.datetime "started_at"
-    t.integer "status"
-    t.bigint "stay_id"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["room_id"], name: "index_cleaning_logs_on_room_id"
     t.index ["stay_id"], name: "index_cleaning_logs_on_stay_id"
@@ -43,31 +43,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   end
 
   create_table "product_price_rules", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.datetime "created_at", null: false
-    t.integer "days_of_week", default: [], array: true
-    t.time "ends_at"
+    t.bigint "product_id", null: false
     t.string "name", null: false
     t.decimal "price", precision: 10, scale: 2, null: false
     t.integer "priority", default: 0, null: false
-    t.bigint "product_id", null: false
+    t.integer "days_of_week", default: [], array: true
     t.time "starts_at"
-    t.datetime "updated_at", null: false
+    t.time "ends_at"
     t.date "valid_from"
     t.date "valid_until"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["product_id", "active", "priority"], name: "idx_on_product_id_active_priority_1078874090"
     t.index ["product_id"], name: "index_product_price_rules_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.integer "category", default: 99, null: false
     t.string "code", limit: 20, null: false
-    t.datetime "created_at", null: false
-    t.text "description"
     t.string "name", null: false
+    t.integer "category", default: 99, null: false
+    t.boolean "active", default: true, null: false
     t.decimal "price", precision: 10, scale: 2, null: false
     t.integer "tax_rate", default: 0, null: false
+    t.text "description"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_products_on_active"
     t.index ["category"], name: "index_products_on_category"
@@ -85,15 +85,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   end
 
   create_table "room_status_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "from_status", null: false
-    t.text "notes"
     t.bigint "room_id", null: false
     t.bigint "stay_id"
+    t.bigint "user_id", null: false
+    t.integer "from_status", null: false
     t.integer "to_status", null: false
     t.integer "trigger", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
     t.index ["room_id", "created_at"], name: "index_room_status_logs_on_room_id_and_created_at"
     t.index ["room_id"], name: "index_room_status_logs_on_room_id"
     t.index ["stay_id"], name: "index_room_status_logs_on_stay_id"
@@ -101,16 +101,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   end
 
   create_table "rooms", force: :cascade do |t|
-    t.bigint "cleaned_by_id"
-    t.datetime "cleaning_finished_at"
-    t.datetime "cleaning_started_at"
     t.datetime "created_at", null: false
     t.decimal "daily_rate", precision: 10, scale: 2, default: "0.0", null: false
     t.integer "floor", default: 1
     t.string "number", null: false
-    t.datetime "quarantine_until"
     t.integer "status", default: 0
     t.datetime "updated_at", null: false
+    t.datetime "cleaning_started_at"
+    t.datetime "cleaning_finished_at"
+    t.datetime "quarantine_until"
+    t.bigint "cleaned_by_id"
     t.index ["cleaned_by_id"], name: "index_rooms_on_cleaned_by_id"
     t.index ["number"], name: "index_rooms_on_number", unique: true
     t.index ["quarantine_until"], name: "index_rooms_on_quarantine_until"
@@ -118,31 +118,65 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
     t.index ["status"], name: "index_rooms_on_status"
   end
 
+  create_table "solid_cache_entries", id: false, force: :cascade do |t|
+    t.binary "key", null: false
+    t.binary "value", null: false
+    t.timestamp "created_at", null: false
+    t.bigint "key_hash", null: false
+    t.bigint "byte_size", null: false
+    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
+    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
+    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash"
+    t.unique_constraint ["key_hash", "byte_size"], name: "solid_cache_entries_key_hash_byte_size_unique"
+    t.unique_constraint ["key_hash"], name: "solid_cache_entries_key_hash_unique"
+  end
+
+  create_table "solid_cache_keyvaluestores", id: false, force: :cascade do |t|
+    t.binary "key", null: false
+    t.binary "value", null: false
+    t.timestamp "created_at", null: false
+    t.bigint "key_hash", null: false
+    t.bigint "byte_size", null: false
+    t.index ["byte_size"], name: "index_solid_cache_keyvaluestores_on_byte_size"
+    t.index ["key_hash", "byte_size"], name: "index_solid_cache_keyvaluestores_on_key_hash_and_byte_size"
+    t.index ["key_hash"], name: "index_solid_cache_keyvaluestores_on_key_hash"
+    t.unique_constraint ["key_hash", "byte_size"], name: "solid_cache_keyvaluestores_key_hash_byte_size_unique"
+    t.unique_constraint ["key_hash"], name: "solid_cache_keyvaluestores_key_hash_unique"
+  end
+
+  create_table "solid_cache_metadata", id: false, force: :cascade do |t|
+    t.binary "key", null: false
+    t.binary "value", null: false
+    t.timestamp "created_at", null: false
+    t.index ["key"], name: "index_solid_cache_metadata_on_key"
+    t.unique_constraint ["key"], name: "solid_cache_metadata_key_unique"
+  end
+
   create_table "stay_audit_logs", force: :cascade do |t|
-    t.integer "audit_action", default: 0, null: false
-    t.datetime "created_at", null: false
+    t.bigint "stay_id", null: false
+    t.bigint "user_id", null: false
     t.string "field_name", null: false
+    t.integer "audit_action", default: 0, null: false
+    t.text "previous_value"
     t.text "new_value"
     t.text "notes"
-    t.text "previous_value"
-    t.bigint "stay_id", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
     t.index ["created_at"], name: "index_stay_audit_logs_on_created_at"
     t.index ["stay_id"], name: "index_stay_audit_logs_on_stay_id"
     t.index ["user_id"], name: "index_stay_audit_logs_on_user_id"
   end
 
   create_table "stay_guests", force: :cascade do |t|
-    t.date "birth_date"
-    t.datetime "created_at", null: false
+    t.bigint "stay_id", null: false
+    t.string "full_name", null: false
     t.string "document"
     t.integer "document_type", default: 0, null: false
-    t.string "email"
-    t.string "full_name", null: false
-    t.boolean "main_guest", default: false, null: false
+    t.date "birth_date"
     t.string "phone"
-    t.bigint "stay_id", null: false
+    t.string "email"
+    t.boolean "main_guest", default: false, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["stay_id", "main_guest"], name: "index_stay_guests_on_stay_id_and_main_guest", unique: true, where: "(main_guest = true)"
     t.index ["stay_id"], name: "index_stay_guests_on_stay_id"
@@ -167,31 +201,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   end
 
   create_table "tab_item_audits", force: :cascade do |t|
-    t.integer "action", null: false
-    t.datetime "created_at", null: false
-    t.jsonb "previous_state", null: false
-    t.text "reason"
     t.bigint "tab_item_id", null: false
-    t.integer "tab_status_at_time", null: false
-    t.datetime "updated_at", null: false
+    t.integer "action", null: false
     t.bigint "user_id", null: false
+    t.text "reason"
+    t.jsonb "previous_state", null: false
+    t.integer "tab_status_at_time", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["tab_item_id"], name: "index_tab_item_audits_on_tab_item_id"
     t.index ["user_id"], name: "index_tab_item_audits_on_user_id"
   end
 
   create_table "tab_items", force: :cascade do |t|
-    t.bigint "added_by_id", null: false
-    t.datetime "created_at", null: false
-    t.text "notes"
-    t.bigint "product_id", null: false
-    t.integer "quantity", default: 1, null: false
-    t.integer "status", default: 0, null: false
     t.bigint "tab_id", null: false
-    t.decimal "total_price", precision: 10, scale: 2, null: false
-    t.decimal "unit_price", precision: 10, scale: 2, null: false
-    t.datetime "updated_at", null: false
-    t.datetime "voided_at"
+    t.bigint "product_id", null: false
+    t.bigint "added_by_id", null: false
     t.bigint "voided_by_id"
+    t.integer "quantity", default: 1, null: false
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.integer "status", default: 0, null: false
+    t.text "notes"
+    t.datetime "voided_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_tab_items_on_added_by_id"
     t.index ["product_id"], name: "index_tab_items_on_product_id"
     t.index ["tab_id"], name: "index_tab_items_on_tab_id"
@@ -199,19 +233,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_120000) do
   end
 
   create_table "tabs", force: :cascade do |t|
-    t.datetime "closed_at"
-    t.bigint "closed_by_id"
-    t.datetime "created_at", null: false
-    t.decimal "discount", precision: 10, scale: 2, default: "0.0", null: false
-    t.string "guest_identifier"
-    t.text "notes"
-    t.bigint "opened_by_id", null: false
-    t.datetime "paid_at"
-    t.bigint "room_id", null: false
-    t.integer "status", default: 0, null: false
     t.bigint "stay_id"
+    t.bigint "room_id", null: false
+    t.bigint "opened_by_id", null: false
+    t.bigint "closed_by_id"
+    t.string "guest_identifier"
+    t.integer "status", default: 0, null: false
     t.decimal "subtotal", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "discount", precision: 10, scale: 2, default: "0.0", null: false
     t.decimal "total", precision: 10, scale: 2, default: "0.0", null: false
+    t.text "notes"
+    t.datetime "closed_at"
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["closed_by_id"], name: "index_tabs_on_closed_by_id"
     t.index ["opened_by_id"], name: "index_tabs_on_opened_by_id"

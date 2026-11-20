@@ -3,6 +3,15 @@
 class RoomHistoryQuery
   Event = Struct.new(:at, :category, :title, :description, :badge, keyword_init: true)
 
+  STATUS_LABELS = {
+    "available" => "Disponível",
+    "occupied" => "Ocupado",
+    "dirty" => "Sujo",
+    "cleaning" => "Em limpeza",
+    "quarantine" => "Quarentena",
+    "maintenance" => "Manutenção"
+  }.freeze
+
   def initialize(room)
     @room = room
   end
@@ -120,10 +129,14 @@ class RoomHistoryQuery
       Event.new(
         at: log.created_at,
         category: :status,
-        title: "#{log.from_status&.humanize} → #{log.to_status&.humanize}",
+        title: "#{status_label(log.from_status)} → #{status_label(log.to_status)}",
         description: log.notes,
         badge: "bg-secondary text-white"
       )
     end
+  end
+
+  def status_label(status)
+    STATUS_LABELS.fetch(status.to_s, status.to_s.humanize)
   end
 end

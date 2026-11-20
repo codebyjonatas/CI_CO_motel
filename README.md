@@ -143,6 +143,33 @@ bin/kamal deploy
 
 Distribuído sob a licença **MIT**. Veja [LICENSE](LICENSE) para mais detalhes.
 
+## Credenciais de Acesso
+
+Como o cadastro público foi desabilitado, utilizamos dois usuários fixos no `db/seeds`. Use-as para testar o projeto:
+
+| Perfil | Email | Senha | Permissões |
+|--------|-------|-------|------------|
+| **Admin** | admin@admin.com | 123456 | Pode gerenciar quartos, estadias, comandas, relatórios e criar novos usuários |
+| **Atendente** | atendente@admin.com | 123456 | Pode realizar check-in/check-out, movimentar comandas e iniciar finalizar limpeza |
+
+## Instruções para testar o projeto
+
+```bash
+# 1. Instale as dependências
+brew bundle install  # ou: bundle install && yarn install
+
+# 2. Crie e configure o banco
+bin/rails db:setup
+
+# 3. Execute a aplicação
+bin/dev   # ou: rails server
+
+# 4. Acesse o login
+#   URL: http://localhost:3000/users/sign_in
+
+# 5. Login com as credenciais acima para testar todos os fluxos
+```
+
 ## Contato
 
 Desenvolvido por **Code by Jonatas** — [GitHub](https://github.com/codebyjonatas/CI_CO_motel)

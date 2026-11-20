@@ -79,3 +79,13 @@ pt-BR:
         email: "E-mail"
         password: "Senha"
         password_confirmation: "Confirmação de senha"
+    errors:
+      models:
+        stay:
+          attributes:
+            user:
+              required: "deve ser informado"
+            room:
+              required: "deve ser informado"
+            room:
+              required: "deve ser informado"

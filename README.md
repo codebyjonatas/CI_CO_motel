@@ -179,4 +179,4 @@ bin/dev   # ou: rails server
 
 ## Contato
 
-Desenvolvido por **Code by Jonatas** — [GitHub](https://github.com/codebyjonatas/CI_CO_motel)
+Desenvolvido por **codebyjonatas** — [GitHub](https://github.com/codebyjonatas/CI_CO_motel)

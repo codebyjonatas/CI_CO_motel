@@ -5,7 +5,7 @@
       <span>Voltar</span>
     <% end %>
     <h1 class="h2 mb-0">Quarto <%= @room.number %></h1>
-    <p class="text-muted small mt-1">Andar <%= @room.floor %> • <%= number_to_currency @room.daily_rate %>/diária</p>
+    <p class="text-muted small mt-1">Andar <%= @room.floor %></p>
   </div>
   <div class="d-flex gap-2">
     <% if policy(@room).edit? %>
@@ -30,7 +30,7 @@
       </div>
       <div class="text-md-end mt-3 mt-md-0">
         <div class="fw-bold text-foreground" style="font-size: 2rem;"><%= number_to_currency @room.daily_rate %></div>
-        <div class="text-muted small">valor da diária</div>
+        <div class="text-muted small">taxa base</div>
       </div>
     </div>
 
@@ -44,16 +44,8 @@
         <dd class="fw-semibold text-foreground fs-5 mb-0"><%= @room.floor %></dd>
       </div>
       <div class="col-md-6 mb-3">
-        <dt class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Diária</dt>
+        <dt class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Taxa Base</dt>
         <dd class="fw-semibold text-foreground fs-5 mb-0"><%= number_to_currency @room.daily_rate %></dd>
-      </div>
-      <div class="col-md-6 mb-3">
-        <dt class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing: 0.05em;">Status</dt>
-        <dd class="mb-0">
-          <span class="badge-custom <%= room_status_badge_class(@room.status) %>">
-            <%= room_status_icon(@room.status) %> <%= room_status_label(@room.status) %>
-          </span>
-        </dd>
       </div>
     </dl>
 

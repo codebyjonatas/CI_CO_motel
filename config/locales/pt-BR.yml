@@ -89,3 +89,28 @@ pt-BR:
               required: "deve ser informado"
             room:
               required: "deve ser informado"
+  devise:
+    default:
+      success: "Logado com sucesso."
+      failed: "E-mail ou senha inválidos."
+    sessions:
+      signed_in: "Bem-vindo de volta!"
+      user:
+        signed_in: "Você já está logged in."
+    passwords:
+      send_instructions: "Você receberá um e-mail com instruções para redefinir sua senha."
+      send_timeout_instructions: "Você receberá um e-mail com instruções para redefinir sua senha."
+    registrations:
+      signed_up: "Sua conta foi criada com sucesso. No entanto, como o cadastro está desabilitado, você precisará ser criado pelo administrador."
+      signed_up_but_user_active: "Sua conta foi criada com sucesso, mas ainda não está ativa."
+    confirmations:
+      send_instructions: "Você receberá um e-mail com instruções para confirmar seu endereço de e-mail."
+      confirmed: "Sua conta foi confirmada com sucesso."
+    unlocks:
+      send_instructions: "Você receberá um e-mail com instruções para destravar sua conta."
+      unlocked: "Sua conta foi destravar com sucesso."
+  # Removido config.registerable = false do initializer - agora controlado por skip: :registration nas rotas
+    sessions:
+      signed_in: "Bem-vindo de novo!"
+      user:
+        signed_in: "Você já está logged in."

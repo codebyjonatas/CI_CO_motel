@@ -119,7 +119,7 @@
                   <% end %>
                   <% if stay.active? %>
                     <% if policy(stay).cancel? %>
-                      <%= button_to cancel_stay_path(stay), method: :patch, class: "btn btn-tertiary btn-sm d-inline-flex align-items-center gap-1", title: "Cancelar", data: { confirm: "Cancelar esta estadia?" }, form: { data: { turbo_confirm: "Cancelar esta estadia?" } } do %>
+                      <%= button_to cancel_stay_path(stay), method: :patch, class: "btn btn-tertiary btn-sm d-inline-flex align-items-center gap-1", title: "Cancelar", data: { turbo_confirm: "Cancelar esta estadia?" } do %>
                         <i class="bi bi-x-circle"></i>
                       <% end %>
                     <% end %>

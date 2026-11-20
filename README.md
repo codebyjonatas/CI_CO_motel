@@ -31,10 +31,6 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 
 *Legendas explicativas disponíveis nas versões annotadas (00-login_annotated.png a 10-relatorios_annotated.png), que indicam cada etapa do fluxo em tempo real.*
 
-[▶️ Ver demo ao vivo](https://demo.seudominio.com) · [📸 Screenshots](docs/screenshots/)
-
-*Legendas explicativas disponíveis nas versões annotadas (00-login_annotated.png a 10-relatorios_annotated.png), que indicam cada etapa do fluxo em tempo real.*
-
 ## Índice
 
 | Tela | Screenshot | Detalhes |
@@ -49,27 +45,6 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 | Comandas | ![](docs/screenshots/08-comandas.png) | Central de comandas do bar |
 | Detalhe da comanda | ![](docs/screenshots/09-comanda.png) | Itens e total da comanda |
 | Relatórios | ![](docs/screenshots/10-relatorios.png) | Faturamento e relatórios financeiros |
-
-![CI](https://github.com/codebyjonatas/CI_CO_motel/actions/workflows/ci.yml/badge.svg?branch=main)
-![Ruby](https://img.shields.io/badge/Ruby-4.0-CC342D?logo=ruby&logoColor=white)
-![Rails](https://img.shields.io/badge/Rails-8.1-CC0000?logo=rubyonrails&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![License](https://img.shields.io/github/license/codebyjonatas/CI_CO_motel)
-
-## Índice
-
-| Tela | Screenshot |
-|---|---|
-| Estadias | ![](docs/screenshots/01-estadias.png) |
-| Check-in | ![](docs/screenshots/02-checkin.png) |
-| Detalhe da estadia | ![](docs/screenshots/03-estadia.png) |
-| Quartos | ![](docs/screenshots/04-quartos.png) |
-| Quarto em limpeza | ![](docs/screenshots/05-quarto-em-limpeza.png) |
-| Quarentena | ![](docs/screenshots/06-quarto-em-quarentena.png) |
-| Histórico do quarto | ![](docs/screenshots/07-historico-quarto.png) |
-| Comandas | ![](docs/screenshots/08-comandas.png) |
-| Detalhe da comanda | ![](docs/screenshots/09-comanda.png) |
-| Relatórios | ![](docs/screenshots/10-relatorios.png) |
 
 ## Arquitetura
 

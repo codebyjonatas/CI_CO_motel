@@ -12,11 +12,35 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 
 ## Demo
 
-![Fluxo check-in → check-out → limpeza → quarentena](docs/screenshots/workflow.gif)
+![Fluxo do Sistema](workflow.gif)
+
+**Fluxo completo do sistema:**
+
+1. Login - Acesso com credenciais admin (admin@admin.com) ou atendente (atendente@admin.com)
+2. Check-in - Seleção de quarto, período de preço (1H/2H/Pernoite) e confirmação do valor
+3. Check-out - Finalização da estadia, quarto enviado para limpeza (status: dirty)
+4. Ciclo de limpeza - dirty → cleaning → quarantine (30 min) → available
+5. Comandas - Abertura por quarto/estadia ou passante (walk-in); itens e totais recalculados
+6. Relatórios - Faturamento e resumos financeiros
 
 [▶️ Ver demo ao vivo](https://demo.seudominio.com) · [📸 Screenshots](docs/screenshots/)
 
-## Badges
+*Legendas explicativas disponíveis nas versões annotadas (00-login_annotated.png a 10-relatorios_annotated.png), que indicam cada etapa do fluxo em tempo real.*
+
+## Índice
+
+| Tela | Screenshot | Detalhes |
+|---|---|---|
+| Estadias | ![](docs/screenshots/01-estadias.png) | Visualização das estadias ativas |
+| Check-in | ![](docs/screenshots/02-checkin.png) | Seleção de quarto e período de preço |
+| Detalhe da estadia | ![](docs/screenshots/03-estadia.png) | Informações da estadia e valores |
+| Quartos | ![](docs/screenshots/04-quartos.png) | Lista de quartos com taxa base e status |
+| Quarto em limpeza | ![](docs/screenshots/05-quarto-em-limpeza.png) | Quarto em processo de limpeza |
+| Quarentena | ![](docs/screenshots/06-quarto-em-quarentena.png) | Quarto em quarentena (30 min) |
+| Histórico do quarto | ![](docs/screenshots/07-historico-quarto.png) | Histórico de status e movimentações |
+| Comandas | ![](docs/screenshots/08-comandas.png) | Central de comandas do bar |
+| Detalhe da comanda | ![](docs/screenshots/09-comanda.png) | Itens e total da comanda |
+| Relatórios | ![](docs/screenshots/10-relatorios.png) | Faturamento e relatórios financeiros |
 
 ![CI](https://github.com/codebyjonatas/CI_CO_motel/actions/workflows/ci.yml/badge.svg?branch=main)
 ![Ruby](https://img.shields.io/badge/Ruby-4.0-CC342D?logo=ruby&logoColor=white)

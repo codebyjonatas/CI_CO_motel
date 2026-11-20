@@ -12,16 +12,24 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 
 ## Demo
 
-![Fluxo do Sistema](workflow.gif)
-
 **Fluxo completo do sistema:**
 
 1. Login - Acesso com credenciais admin (admin@admin.com) ou atendente (atendente@admin.com)
+   *Ver: 00-login_annotated.png*
 2. Check-in - Seleção de quarto, período de preço (1H/2H/Pernoite) e confirmação do valor
+   *Ver: 02-checkin_annotated.png*
 3. Check-out - Finalização da estadia, quarto enviado para limpeza (status: dirty)
+   *Ver: 03-estadia_annotated.png (before) e 05-quarto-em-limpeza_annotated.png (after)*
 4. Ciclo de limpeza - dirty → cleaning → quarantine (30 min) → available
+   *Ver: 05-quarto-em-limpeza_annotated.png e 06-quarto-em-quarentena_annotated.png*
 5. Comandas - Abertura por quarto/estadia ou passante (walk-in); itens e totais recalculados
+   *Ver: 08-comandas_annotated.png*
 6. Relatórios - Faturamento e resumos financeiros
+   *Ver: 10-relatorios_annotated.png*
+
+[▶️ Ver demo ao vivo](https://demo.seudominio.com) · [📸 Screenshots](docs/screenshots/)
+
+*Legendas explicativas disponíveis nas versões annotadas (00-login_annotated.png a 10-relatorios_annotated.png), que indicam cada etapa do fluxo em tempo real.*
 
 [▶️ Ver demo ao vivo](https://demo.seudominio.com) · [📸 Screenshots](docs/screenshots/)
 

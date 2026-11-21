@@ -78,14 +78,14 @@ jobs:
           BW_SESSION="$(bw unlock "$BW_PASSWORD" --raw)"
           export BW_SESSION
 
-          MASTER_KEY="$(bw get password 'CI-CO Motel | Rails Master Key (prod)')"
+          MASTER_KEY="$(bw get password 'MotelFlow | Rails Master Key (prod)')"
           test "${#MASTER_KEY}" -eq 32
 
-          DB_ITEM="$(bw get item 'CI-CO Motel | Database (prod)')"
+          DB_ITEM="$(bw get item 'MotelFlow | Database (prod)')"
           DB_PASS="$(printf '%s' "$DB_ITEM" | jq -r '.login.password // empty')"
           test -n "$DB_PASS"
 
-          APP_ITEM="$(bw get item 'CI-CO Motel | App Config (prod)')"
+          APP_ITEM="$(bw get item 'MotelFlow | App Config (prod)')"
           APP_HOST="$(printf '%s' "$APP_ITEM" | jq -r '([.fields[]? | select(.name=="APP_HOST") | .value][0]) // empty')"
           test -n "$APP_HOST"
 

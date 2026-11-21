@@ -47,7 +47,7 @@ env:
     SOLID_QUEUE_IN_PUMA: true
 
     # Host público (usado por config.hosts e force_ssl em production.rb).
-    # Definido no Bitwarden em "CI-CO Motel | App Config (prod)".
+    # Definido no Bitwarden em "MotelFlow | App Config (prod)".
     APP_HOST: <%= ENV.fetch("APP_HOST", "localhost") %>
 
     # Set number of processes dedicated to Solid Queue (default: 1)

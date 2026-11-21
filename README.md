@@ -1,4 +1,4 @@
-# CI/CO Motel
+# MotelFlow
 
 Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, **Bootstrap 5**, **Turbo/Stimulus**, **Solid Queue**, **Solid Cache** e **Solid Cable**.
 

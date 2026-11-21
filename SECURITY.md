@@ -1,7 +1,7 @@
-# Política de Segurança — CI/CO Motel
+# Política de Segurança — MotelFlow
 
 Documento operacional: **o que guardar, onde guardar, como rotacionar**.
-Fonte da verdade dos segredos: **Bitwarden** (pasta `CI-CO Motel`).
+Fonte da verdade dos segredos: **Bitwarden** (pasta `MotelFlow`).
 
 ---
 
@@ -17,20 +17,20 @@ Fonte da verdade dos segredos: **Bitwarden** (pasta `CI-CO Motel`).
 
 ## 2. Estrutura no Bitwarden
 
-Pasta: **`CI-CO Motel`** (vault pessoal enquanto o time for pequeno; migrar para Organization quando houver mais de uma pessoa com acesso a produção).
+Pasta: **`MotelFlow`** (vault pessoal enquanto o time for pequeno; migrar para Organization quando houver mais de uma pessoa com acesso a produção).
 
-Convenção de nome: `CI-CO Motel | <Assunto> (<ambiente>)`.
+Convenção de nome: `MotelFlow | <Assunto> (<ambiente>)`.
 O prefixo evita colisão com itens pessoais e permite que os scripts localizem o item por nome exato.
 
 ### 2.1 Itens obrigatórios
 
 | Item | Tipo | Campo | Conteúdo | Consumido por |
 |------|------|-------|----------|---------------|
-| `CI-CO Motel \| Rails Master Key (dev)` | Login | `password` | Conteúdo de `config/master.key` (32 hex) | `bin/setup-env` → `RAILS_MASTER_KEY` |
-| `CI-CO Motel \| Rails Master Key (prod)` | Login | `password` | Master key de produção (32 hex) | `bin/kamal-with-secrets` |
-| `CI-CO Motel \| Database (dev)` | Login | `username` / `password` | Usuário e senha do PostgreSQL local | `bin/setup-env` → `DATABASE_URL` |
-| `CI-CO Motel \| Database (prod)` | Login | `username` / `password` | `sys_check_in_check_out` + senha forte | `bin/kamal-with-secrets` → `SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD` |
-| `CI-CO Motel \| App Config (prod)` | Nota segura | custom fields | ver 2.2 | `bin/kamal-with-secrets` |
+| `MotelFlow \| Rails Master Key (dev)` | Login | `password` | Conteúdo de `config/master.key` (32 hex) | `bin/setup-env` → `RAILS_MASTER_KEY` |
+| `MotelFlow \| Rails Master Key (prod)` | Login | `password` | Master key de produção (32 hex) | `bin/kamal-with-secrets` |
+| `MotelFlow \| Database (dev)` | Login | `username` / `password` | Usuário e senha do PostgreSQL local | `bin/setup-env` → `DATABASE_URL` |
+| `MotelFlow \| Database (prod)` | Login | `username` / `password` | `sys_check_in_check_out` + senha forte | `bin/kamal-with-secrets` → `SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD` |
+| `MotelFlow \| App Config (prod)` | Nota segura | custom fields | ver 2.2 | `bin/kamal-with-secrets` |
 
 **Custom fields do item `Database (dev)` / `Database (prod)`:**
 
@@ -59,8 +59,8 @@ O prefixo evita colisão com itens pessoais e permite que os scripts localizem o
 
 | Item | Tipo | Uso |
 |------|------|-----|
-| `CI-CO Motel \| SMTP` | Login (`username`/`password`) + fields `address`, `port` | Envio de e-mail (Devise: reset de senha, confirmação) |
-| `CI-CO Motel \| Kamal Registry` | Login (`username`/`password`) | Só quando o registry exigir autenticação (hoje `localhost:5555`) |
+| `MotelFlow \| SMTP` | Login (`username`/`password`) + fields `address`, `port` | Envio de e-mail (Devise: reset de senha, confirmação) |
+| `MotelFlow \| Kamal Registry` | Login (`username`/`password`) | Só quando o registry exigir autenticação (hoje `localhost:5555`) |
 
 ### 2.4 O que **não** guardar no Bitwarden do projeto
 
@@ -141,7 +141,7 @@ cp config/credentials.yml.enc /tmp/credentials.$(date +%F).enc
 bin/rails credentials:edit
 
 # 3. Atualizar o item no Bitwarden:
-#    "CI-CO Motel | Rails Master Key (prod)" (e "(dev)" se aplicável)
+#    "MotelFlow | Rails Master Key (prod)" (e "(dev)" se aplicável)
 
 # 4. Regerar o .env.local local
 bin/setup-env --force
@@ -158,7 +158,7 @@ bin/kamal-with-secrets deploy
 ALTER USER sys_check_in_check_out WITH PASSWORD '<nova-senha-forte>';
 ```
 
-1. Atualizar `CI-CO Motel | Database (prod)` no Bitwarden.
+1. Atualizar `MotelFlow | Database (prod)` no Bitwarden.
 2. `bin/kamal-with-secrets deploy` (o container reinicia com a nova senha).
 
 > Se houver réplicas/leitores, atualize todos antes do restart.
@@ -166,7 +166,7 @@ ALTER USER sys_check_in_check_out WITH PASSWORD '<nova-senha-forte>';
 ### 4.3 SMTP
 
 1. Rotacionar no provedor (SendGrid/SES/etc.).
-2. Atualizar `CI-CO Motel | SMTP`.
+2. Atualizar `MotelFlow | SMTP`.
 3. `bin/kamal-with-secrets deploy`.
 
 ---

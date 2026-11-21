@@ -1,4 +1,4 @@
-# CI/CO Motel — Sistema de Check-in/Check-out
+# MotelFlow — Sistema de Check-in/Check-out
 
 App Rails 8.1 para gestão de quartos de hotel/motel com períodos de preço fixos.
 

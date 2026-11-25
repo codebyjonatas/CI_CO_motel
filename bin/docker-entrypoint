@@ -1,8 +1,14 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
+# If running the rails server then prepare the database (create/migrate).
+# `db:prepare` does NOT run seeds when the database already exists (Render
+# creates the database empty beforehand), so we seed idempotently afterwards.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+
+  if [ -n "${SEED_ADMIN_PASSWORD:-}" ] && [ -n "${SEED_ATTENDANT_PASSWORD:-}" ]; then
+    ./bin/rails db:seed
+  fi
 fi
 
 exec "${@}"

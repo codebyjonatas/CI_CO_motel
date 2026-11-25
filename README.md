@@ -1,12 +1,12 @@
 # MotelFlow
 
-Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, **Bootstrap 5**, **Turbo/Stimulus**, **Solid Queue**, **Solid Cache** e **Solid Cable**.
+Sistema de gestão para motéis: check-in/check-out, controle de quartos, comandas de bar, precificação dinâmica e ciclo de limpeza. Feito com **Ruby on Rails 8**, **Bootstrap 5**, **Turbo/Stimulus**, **Solid Queue**, **Solid Cache** e **Solid Cable**.
 
-[![CI](https://github.com/codebyjonatas/CI_CO_motel/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/codebyjonatas/CI_CO_motel/actions/workflows/ci.yml)
+[![CI](https://github.com/codebyjonatas/MotelFlow/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/codebyjonatas/MotelFlow/actions/workflows/ci.yml)
 [![Ruby](https://img.shields.io/badge/Ruby-4.0-CC342D?logo=ruby&logoColor=white)](https://rubygems.org/gems/rails/8.1.4.1)
 [![Rails](https://img.shields.io/badge/Rails-8.1-CC0000?logo=rubyonrails&logoColor=white)](https://rubygems.org/gems/rails/8.1.4.1)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/github/license/codebyjonatas/CI_CO_motel)](LICENSE)
+[![License](https://img.shields.io/github/license/codebyjonatas/MotelFlow)](LICENSE)
 
 > Painel operacional, ciclo AASM de quartos, comandas de bar com itens e precificação dinâmica, autorização com Pundit e timestamps em UTC com fuso America/Sao_Paulo.
 
@@ -27,7 +27,7 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 6. Relatórios - Faturamento e resumos financeiros
    *Ver: 10-relatorios_annotated.png*
 
-[▶️ Ver demo ao vivo](https://demo.seudominio.com) · [📸 Screenshots](docs/screenshots/)
+[▶️ Ver demo ao vivo](https://motelflow-ctp3.onrender.com) · [📸 Screenshots](docs/screenshots/)
 
 *Legendas explicativas disponíveis nas versões annotadas (00-login_annotated.png a 10-relatorios_annotated.png), que indicam cada etapa do fluxo em tempo real.*
 
@@ -80,8 +80,8 @@ Sistema de check-in/check-out para motéis e hotéis, feito com **Rails 8.1**, *
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/codebyjonatas/CI_CO_motel.git
-cd CI_CO_motel
+git clone https://github.com/codebyjonatas/MotelFlow.git
+cd MotelFlow
 
 # 2. Instale as dependências
 brew bundle install  # ou: rvm use 4.0.5 && rvm gemset create ci-co-motel
@@ -134,7 +134,7 @@ Para um deploy rápido:
 
 ```bash
 # Variáveis de ambiente (no Bitwarden ou .env)
-export APP_HOST=demo.seudominio.com
+export APP_HOST=motelflow-ctp3.onrender.com
 export RAILS_MASTER_KEY=sua-chave-secreta
 export SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD=sua-senha-pg
 export APP_TIME_ZONE="America/Sao_Paulo"
@@ -179,4 +179,4 @@ bin/dev   # ou: rails server
 
 ## Contato
 
-Desenvolvido por **codebyjonatas** — [GitHub](https://github.com/codebyjonatas/CI_CO_motel)
+Desenvolvido por **codebyjonatas** — [GitHub](https://github.com/codebyjonatas/MotelFlow)

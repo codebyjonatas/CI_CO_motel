@@ -25,7 +25,9 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  # Render always terminates TLS at its edge and forwards the request over HTTP,
+  # so we assume SSL to avoid force_ssl redirect loops.
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
@@ -80,10 +82,15 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
+  # APP_HOST: custom domain (e.g. app.example.com).
+  # RENDER_EXTERNAL_HOSTNAME: injected automatically by Render (e.g. myapp.onrender.com).
+  app_host = ENV.fetch("APP_HOST", "localhost")
   config.hosts = [
-    ENV.fetch("APP_HOST", "localhost"),
-    /.*\.#{ENV.fetch("APP_HOST", "localhost")}/
-  ]
+    app_host,
+    /.*\.#{Regexp.escape(app_host)}/,
+    ENV["RENDER_EXTERNAL_HOSTNAME"],
+    /.*\.onrender\.com/
+  ].compact
 
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }

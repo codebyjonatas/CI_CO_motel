@@ -85,11 +85,8 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: sys_check_in_check_out_production
-    username: sys_check_in_check_out
-    password: <%= ENV["SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD"] %>
+  primary:
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
     database: sys_check_in_check_out_production_cache

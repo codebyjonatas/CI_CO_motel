@@ -84,7 +84,7 @@ git clone https://github.com/codebyjonatas/MotelFlow.git
 cd MotelFlow
 
 # 2. Instale as dependências
-brew bundle install  # ou: rvm use 4.0.5 && rvm gemset create ci-co-motel
+brew bundle install  # ou: rvm use 4.0.5 && rvm gemset create motelflow
 # Ou manualmente:
 bundle install && yarn install
 
@@ -98,6 +98,8 @@ bin/rails db:setup
 # 5. Rode a aplicação
 bin/dev   # ou: rails server
 ```
+
+> Já tinha o projeto clonado antes da renomeação? Recrie o banco local com `bin/rails db:drop db:setup` — os bancos agora se chamam `motelflow_*`.
 
 ## Comandos Principais
 
@@ -128,23 +130,43 @@ As capturas abaixo foram geradas automaticamente e mostram os fluxos críticos d
 
 ## Deploy
 
-O projeto já possui configuração **Kamal** para deploy Docker. Veja `.github/workflows/deploy.yml` e `config/deploy.yml`.
+O projeto tem dois alvos independentes: uma **demo pública no Render** e um **deploy self-hosted com Kamal**.
 
-Para um deploy rápido:
+### Demo no Render
+
+A demo está em [motelflow-ctp3.onrender.com](https://motelflow-ctp3.onrender.com), publicada como container Docker direto pelo dashboard do Render (não há `render.yaml`).
+
+Variáveis de ambiente no Render:
+
+| Variável | Obrigatória | Uso |
+|---|---|---|
+| `RAILS_MASTER_KEY` | sim | descriptografa `config/credentials.yml.enc` |
+| `SECRET_KEY_BASE` | opcional | sobrescreve o `secret_key_base` de `credentials.yml.enc` |
+| `DATABASE_URL` | sim (injetada pelo Render) | PostgreSQL gerenciado |
+| `SEED_ADMIN_PASSWORD` / `SEED_ATTENDANT_PASSWORD` | no primeiro boot | criam os usuários iniciais |
+| `APP_HOST` | opcional | host canônico |
+
+O `bin/docker-entrypoint` roda `db:prepare` e, quando as senhas de seed existem, `db:seed`. O Render permite `CREATE DATABASE` na mesma instância, então os bancos de cache, fila e cable são criados automaticamente.
+
+### Self-hosted com Kamal
+
+Configuração em `config/deploy.yml`; os segredos vêm do Bitwarden via `bin/kamal-with-secrets` (nada é gravado em disco).
 
 ```bash
-# Variáveis de ambiente (no Bitwarden ou .env)
-export APP_HOST=motelflow-ctp3.onrender.com
-export RAILS_MASTER_KEY=sua-chave-secreta
-export SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD=sua-senha-pg
-export APP_TIME_ZONE="America/Sao_Paulo"
+# primeira vez
+bin/kamal-with-secrets setup
 
-# Setup inicial
-bin/kamal setup
-
-# Deploy
-bin/kamal deploy
+# deploys seguintes
+bin/kamal-with-secrets deploy
 ```
+
+Além dos itens do Bitwarden (veja `SECURITY.md`), defina no ambiente do Kamal:
+
+- `APP_HOST` — domínio público (item `MotelFlow | App Config (prod)`)
+- `DATABASE_URL` — conexão PostgreSQL de produção; configure no Kamal (ex.: `env.secret` em `config/deploy.yml` + `.kamal/secrets`)
+- `MOTELFLOW_DATABASE_PASSWORD` — senha do banco, exportada por `bin/kamal-with-secrets` a partir do item `MotelFlow | Database (prod)`
+
+> A demo no Render e o deploy Kamal são independentes: mudanças em um não afetam o outro.
 
 ## Licença
 

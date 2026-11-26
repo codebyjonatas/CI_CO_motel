@@ -29,7 +29,7 @@ O prefixo evita colisão com itens pessoais e permite que os scripts localizem o
 | `MotelFlow \| Rails Master Key (dev)` | Login | `password` | Conteúdo de `config/master.key` (32 hex) | `bin/setup-env` → `RAILS_MASTER_KEY` |
 | `MotelFlow \| Rails Master Key (prod)` | Login | `password` | Master key de produção (32 hex) | `bin/kamal-with-secrets` |
 | `MotelFlow \| Database (dev)` | Login | `username` / `password` | Usuário e senha do PostgreSQL local | `bin/setup-env` → `DATABASE_URL` |
-| `MotelFlow \| Database (prod)` | Login | `username` / `password` | `sys_check_in_check_out` + senha forte | `bin/kamal-with-secrets` → `SYS_CHECK_IN_CHECK_OUT_DATABASE_PASSWORD` |
+| `MotelFlow \| Database (prod)` | Login | `username` / `password` | `motelflow` + senha forte | `bin/kamal-with-secrets` → `MOTELFLOW_DATABASE_PASSWORD` |
 | `MotelFlow \| App Config (prod)` | Nota segura | custom fields | ver 2.2 | `bin/kamal-with-secrets` |
 
 **Custom fields do item `Database (dev)` / `Database (prod)`:**
@@ -38,7 +38,7 @@ O prefixo evita colisão com itens pessoais e permite que os scripts localizem o
 |-------|---------|
 | `host` | `localhost` / `db.interno` |
 | `port` | `5432` |
-| `database` | `sys_check_in_check_out_development` / `sys_check_in_check_out_production` |
+| `database` | `motelflow_development` / `motelflow_production` |
 
 > No dev, se o PostgreSQL usa autenticação por socket/peer, deixe `password` vazio e omita `host`. O `bin/setup-env` então não gera `DATABASE_URL` (e avisa).
 
@@ -155,7 +155,7 @@ bin/kamal-with-secrets deploy
 ### 4.2 Senha do PostgreSQL (prod)
 
 ```sql
-ALTER USER sys_check_in_check_out WITH PASSWORD '<nova-senha-forte>';
+ALTER USER motelflow WITH PASSWORD '<nova-senha-forte>';
 ```
 
 1. Atualizar `MotelFlow | Database (prod)` no Bitwarden.

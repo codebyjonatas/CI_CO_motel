@@ -36,6 +36,7 @@
 /public/assets
 
 # Ignore key files for decrypting credentials and more.
+# Rails master key - never commit (used to decrypt credentials.yml.enc).
 /config/*.key
 
 

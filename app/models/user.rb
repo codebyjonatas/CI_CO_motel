@@ -18,7 +18,7 @@ class User < ApplicationRecord
   end
 
   def self.system_user
-    find_or_create_by!(email: "system@ci-co-motel.local") do |u|
+    find_or_create_by!(email: "system@motelflow.local") do |u|
       u.name = "Sistema"
       u.password = SecureRandom.hex(16)
     end

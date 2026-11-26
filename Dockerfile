@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t sys_check_in_check_out .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name sys_check_in_check_out sys_check_in_check_out
+# docker build -t motelflow .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name motelflow motelflow
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

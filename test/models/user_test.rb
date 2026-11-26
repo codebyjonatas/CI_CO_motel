@@ -29,6 +29,6 @@ class UserTest < ActiveSupport::TestCase
 
     assert user.persisted?
     assert_equal user, User.system_user
-    assert_equal "system@ci-co-motel.local", user.email
+    assert_equal "system@motelflow.local", user.email
   end
 end

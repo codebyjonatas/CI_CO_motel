@@ -141,12 +141,12 @@ Variáveis de ambiente no Render:
 | Variável | Obrigatória | Uso |
 |---|---|---|
 | `RAILS_MASTER_KEY` | sim | descriptografa `config/credentials.yml.enc` |
-| `SECRET_KEY_BASE` | opcional | sobrescreve o `secret_key_base` de `credentials.yml.enc` |
+| `SECRET_KEY_BASE` | sim | chave de sessão e CSP (não está em `credentials.yml.enc`) |
 | `DATABASE_URL` | sim (injetada pelo Render) | PostgreSQL gerenciado |
 | `SEED_ADMIN_PASSWORD` / `SEED_ATTENDANT_PASSWORD` | no primeiro boot | criam os usuários iniciais |
 | `APP_HOST` | opcional | host canônico |
 
-O `bin/docker-entrypoint` roda `db:prepare` e, quando as senhas de seed existem, `db:seed`. O Render permite `CREATE DATABASE` na mesma instância, então os bancos de cache, fila e cable são criados automaticamente.
+O `bin/docker-entrypoint` roda `db:prepare` e, quando as senhas de seed existem, `db:seed`.
 
 ### Self-hosted com Kamal
 
@@ -163,6 +163,7 @@ bin/kamal-with-secrets deploy
 Além dos itens do Bitwarden (veja `SECURITY.md`), defina no ambiente do Kamal:
 
 - `APP_HOST` — domínio público (item `MotelFlow | App Config (prod)`)
+- `SECRET_KEY_BASE` — chave de sessão/CSP; configure no Kamal (`env.secret` + `.kamal/secrets`)
 - `DATABASE_URL` — conexão PostgreSQL de produção; configure no Kamal (ex.: `env.secret` em `config/deploy.yml` + `.kamal/secrets`)
 - `MOTELFLOW_DATABASE_PASSWORD` — senha do banco, exportada por `bin/kamal-with-secrets` a partir do item `MotelFlow | Database (prod)`
 
